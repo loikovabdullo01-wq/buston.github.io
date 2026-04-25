@@ -1348,690 +1348,712 @@
     </div>
 
     <script>
-        // ========== ДАННЫЕ (локальные файлы) ==========
-        let products = JSON.parse(localStorage.getItem('products')) || [
-            { id: 1, name: 'Шурпа из говядины', desc: '400г ·', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
-            { id: 2, name: 'Люля-кебаб', desc: '1 шт · говядина', price: 200, type: 'cafe', category: 'shashlik', img: "Люля-кебаб.webp", emoji: '🍡' },
-            { id: 3, name: 'Манты', desc: '350г · 5 шт', price: 300, type: 'cafe', category: 'dish', img: "манты.jpg", emoji: '🍜' },
-            { id: 4, name: 'Плов с говядины', desc: '450г · с нутом', price: 300, type: 'cafe', category: 'dish', img: "333.webp", emoji: '🍚' },
-            { id: 5, name: 'Самса с мясом', desc: '2 шт · тандыр', price: 280, type: 'cafe', category: 'bakery', img: "444.png", emoji: '🥟' },
-            { id: 6, name: 'Хачапури', desc: '300г · яйцо', price: 420, type: 'cafe', category: 'bakery', img: "555.jpg", emoji: '🥐' },
-            { id: 7, name: 'RC colla 05', desc: '05л · натуральный', price: 100, type: 'cafe', category: 'drinks', img: "арс.webp", emoji: '🥛' },
-            { id: 7.5, name: 'RC colla 05', desc: '05л · натуральный', price: 100, type: 'cafe', category: 'drinks', img: "арсс.jpg", emoji: '🥛' },
-            { id: 8, name: 'Гранатовый сок', desc: '0.5л · свежий', price: 290, type: 'cafe', category: 'drinks', img: '', emoji: '🧃' },
-            { id: 12, name: 'Рис Девзира', desc: '900г · для плова', price: 320, type: 'market', category: 'grocery', img: '', emoji: '🍚' },
-            { id: 13, name: 'Масло сливочное', desc: '82.5% · 180г', price: 240, type: 'market', category: 'grocery', img: '', emoji: '🧈' },
-            { id: 14, name: 'Молоко 3.2%', desc: '1л', price: 110, type: 'market', category: 'grocery', img: '', emoji: '🥛' },
-            { id: 18, name: 'Помидоры', desc: '1кг · грунтовые', price: 220, type: 'market', category: 'grocery', img: '', emoji: '🍅' },
-            { id: 19, name: 'Огурцы', desc: '1кг · свежие', price: 190, type: 'market', category: 'grocery', img: '', emoji: '🥒' }
-        ];
+       // ========== ДАННЫЕ (локальные файлы) ==========
+let products = JSON.parse(localStorage.getItem('products')) || [
+    { id: 1, name: 'Шурпа из говядины', desc: '400г ·', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
+    { id: 2, name: 'Люля-кебаб', desc: '1 шт · говядина', price: 200, type: 'cafe', category: 'shashlik', img: "Люля-кебаб.webp", emoji: '🍡' },
+    { id: 3, name: 'Манты', desc: '350г · 5 шт', price: 300, type: 'cafe', category: 'dish', img: "манты.jpg", emoji: '🍜' },
+    { id: 4, name: 'Плов с говядины', desc: '450г · с нутом', price: 300, type: 'cafe', category: 'dish', img: "333.webp", emoji: '🍚' },
+    { id: 5, name: 'Самса с мясом', desc: '2 шт · тандыр', price: 280, type: 'cafe', category: 'bakery', img: "444.png", emoji: '🥟' },
+    { id: 6, name: 'Хачапури', desc: '300г · яйцо', price: 420, type: 'cafe', category: 'bakery', img: "555.jpg", emoji: '🥐' },
+    { id: 7, name: 'RC colla 05', desc: '05л · натуральный', price: 100, type: 'cafe', category: 'drinks', img: "арс.webp", emoji: '🥛' },
+    { id: 7.5, name: 'RC colla 05', desc: '05л · натуральный', price: 100, type: 'cafe', category: 'drinks', img: "арсс.jpg", emoji: '🥛' },
+    { id: 8, name: 'Гранатовый сок', desc: '0.5л · свежий', price: 290, type: 'cafe', category: 'drinks', img: '', emoji: '🧃' },
+    { id: 12, name: 'Рис Девзира', desc: '900г · для плова', price: 320, type: 'market', category: 'grocery', img: '', emoji: '🍚' },
+    { id: 13, name: 'Масло сливочное', desc: '82.5% · 180г', price: 240, type: 'market', category: 'grocery', img: '', emoji: '🧈' },
+    { id: 14, name: 'Молоко 3.2%', desc: '1л', price: 110, type: 'market', category: 'grocery', img: '', emoji: '🥛' },
+    { id: 18, name: 'Помидоры', desc: '1кг · грунтовые', price: 220, type: 'market', category: 'grocery', img: '', emoji: '🍅' },
+    { id: 19, name: 'Огурцы', desc: '1кг · свежие', price: 190, type: 'market', category: 'grocery', img: '', emoji: '🥒' }
+];
 
-        const categories = [
-            { id: 'all', name: 'Все', emoji: '🍽️' },
-            { id: 'shashlik', name: 'Шашлык', emoji: '🍢' },
-            { id: 'dish', name: 'Блюда', emoji: '🍜' },
-            { id: 'bakery', name: 'Выпечка', emoji: '🥐' },
-            { id: 'drinks', name: 'Напитки', emoji: '🥤' },
-            { id: 'sauces', name: 'Соусы', emoji: '🍶' },
-            { id: 'grocery', name: 'Продукты', emoji: '🛒' }
-           
-        ];
+const categories = [
+    { id: 'all', name: 'Все', emoji: '🍽️' },
+    { id: 'shashlik', name: 'Шашлык', emoji: '🍢' },
+    { id: 'dish', name: 'Блюда', emoji: '🍜' },
+    { id: 'bakery', name: 'Выпечка', emoji: '🥐' },
+    { id: 'drinks', name: 'Напитки', emoji: '🥤' },
+    { id: 'sauces', name: 'Соусы', emoji: '🍶' },
+    { id: 'grocery', name: 'Продукты', emoji: '🛒' }
+];
 
-        const ADMIN_PIN = '1234';
-        const OWNER_PHONE = '79385401876';
+const ADMIN_PIN = '1234';
+const OWNER_PHONE = '79385401876';
 
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-        let addresses = JSON.parse(localStorage.getItem('addresses')) || [
-            { id: 1, title: 'Дом', address: 'ул. Восточная, 15к2, кв 42', isDefault: true },
-            { id: 2, title: 'Работа', address: 'ул. Ленина, 10, офис 305', isDefault: false }
-        ];
-        let selectedAddress = addresses.find(a => a.isDefault) || addresses[0];
-        let selectedPayment = 'card';
-        let activeMode = 'all';
-        let activeCategory = 'all';
-        let searchQuery = '';
-        let isAdminAuthenticated = false;
-        let currentOrder = null;
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+let addresses = JSON.parse(localStorage.getItem('addresses')) || [
+    { id: 1, title: 'Дом', address: 'ул. Восточная, 15к2, кв 42', isDefault: true },
+    { id: 2, title: 'Работа', address: 'ул. Ленина, 10, офис 305', isDefault: false }
+];
+let selectedAddress = addresses.find(a => a.isDefault) || addresses[0];
+let selectedPayment = 'card';
+let activeMode = 'all';
+let activeCategory = 'all';
+let searchQuery = '';
+let isAdminAuthenticated = false;
+let currentOrder = null;
 
-        // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КАРТИНОК ==========
-        function getProductImageHTML(product) {
-            if (product.img && product.img.trim() !== '') {
-                return `<img src="${product.img}" alt="${product.name}" onerror="this.onerror=null; this.parentElement.innerHTML='${product.emoji || '🍽️'}';">`;
-            } else {
-                return product.emoji || '🍽️';
-            }
+// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КАРТИНОК ==========
+function getProductImageHTML(product) {
+    if (product.img && product.img.trim() !== '') {
+        return `<img src="${product.img}" alt="${product.name}" onerror="this.onerror=null; this.parentElement.innerHTML='${product.emoji || '🍽️'}';">`;
+    } else {
+        return product.emoji || '🍽️';
+    }
+}
+
+function handleNewImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64 = e.target.result;
+        document.getElementById('newProductImg').value = base64;
+        const preview = document.getElementById('newImagePreview');
+        preview.src = base64;
+        preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+}
+
+function handleEditImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64 = e.target.result;
+        document.getElementById('editProductImg').value = base64;
+        const preview = document.getElementById('editImagePreview');
+        preview.src = base64;
+        preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+}
+
+// ========== СИНХРОНИЗАЦИЯ ДАННЫХ ПРОФИЛЯ В ФОРМУ ЗАКАЗА ==========
+function updateCheckoutFormFromProfile() {
+    const savedName = localStorage.getItem('profileName');
+    const savedPhone = localStorage.getItem('profilePhone');
+    const nameInput = document.getElementById('customerName');
+    const phoneInput = document.getElementById('customerPhone');
+    if (nameInput) {
+        nameInput.value = (savedName && savedName.trim() !== '') ? savedName : 'Гость';
+    }
+    if (phoneInput) {
+        phoneInput.value = (savedPhone && savedPhone.trim() !== '') ? savedPhone : '+7 ';
+    }
+}
+
+// ========== ПРОФИЛЬ ==========
+function loadProfileData() {
+    const savedName = localStorage.getItem('profileName');
+    const savedPhone = localStorage.getItem('profilePhone');
+    const savedPhoto = localStorage.getItem('profilePhoto');
+    if (savedName) document.getElementById('profileNameDisplay').textContent = savedName;
+    if (savedPhone) document.getElementById('profilePhoneDisplay').textContent = savedPhone;
+    if (savedPhoto) {
+        const avatar = document.getElementById('profileAvatarDisplay');
+        avatar.innerHTML = `<img src="${savedPhoto}" class="profile-avatar-img" alt="Profile">`;
+        avatar.style.background = 'none';
+    }
+    // Обновляем форму заказа при загрузке профиля
+    updateCheckoutFormFromProfile();
+}
+
+function handleProfilePhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64 = e.target.result;
+        const avatar = document.getElementById('profileAvatarDisplay');
+        avatar.innerHTML = `<img src="${base64}" class="profile-avatar-img" alt="Profile">`;
+        avatar.style.background = 'none';
+        localStorage.setItem('profilePhoto', base64);
+        showToast('📸 Фото обновлено');
+    };
+    reader.readAsDataURL(file);
+}
+
+function startEditName() {
+    const nameDisplay = document.getElementById('profileNameDisplay');
+    const currentName = nameDisplay.textContent;
+    const container = nameDisplay.parentNode;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentName;
+    input.className = 'profile-name-input';
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = '✓';
+    saveBtn.className = 'profile-name-save';
+    saveBtn.onclick = function() {
+        const newName = input.value.trim();
+        if (newName) {
+            nameDisplay.textContent = newName;
+            localStorage.setItem('profileName', newName);
+            updateCheckoutFormFromProfile(); // Синхронизация с формой заказа
+            showToast('👤 Имя сохранено');
         }
+        container.innerHTML = `<h2 id="profileNameDisplay">${newName || currentName}</h2><button class="profile-name-edit" onclick="startEditName()">✏️</button>`;
+    };
+    container.innerHTML = '';
+    container.appendChild(input);
+    container.appendChild(saveBtn);
+    input.focus();
+}
 
-        function handleNewImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64 = e.target.result;
-                document.getElementById('newProductImg').value = base64;
-                const preview = document.getElementById('newImagePreview');
-                preview.src = base64;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+function startEditPhone() {
+    const phoneDisplay = document.getElementById('profilePhoneDisplay');
+    const currentPhone = phoneDisplay.textContent;
+    const container = phoneDisplay.parentNode;
+    const input = document.createElement('input');
+    input.type = 'tel';
+    input.value = currentPhone;
+    input.className = 'profile-phone-input';
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = '✓';
+    saveBtn.className = 'profile-phone-save';
+    saveBtn.onclick = function() {
+        const newPhone = input.value.trim();
+        if (newPhone) {
+            phoneDisplay.textContent = newPhone;
+            localStorage.setItem('profilePhone', newPhone);
+            updateCheckoutFormFromProfile(); // Синхронизация с формой заказа
+            showToast('📞 Номер сохранён');
         }
+        container.innerHTML = `<p id="profilePhoneDisplay">${newPhone || currentPhone}</p><button class="profile-phone-edit" onclick="startEditPhone()">✏️</button>`;
+    };
+    container.innerHTML = '';
+    container.appendChild(input);
+    container.appendChild(saveBtn);
+    input.focus();
+}
 
-        function handleEditImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64 = e.target.result;
-                document.getElementById('editProductImg').value = base64;
-                const preview = document.getElementById('editImagePreview');
-                preview.src = base64;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
+// ========== НАВИГАЦИЯ ==========
+function navigateTo(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(page + 'Page').classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.page === page) item.classList.add('active');
+    });
+    if (page === 'home') renderProducts();
+    if (page === 'cart') {
+        renderCartPage();
+        updateCheckoutFormFromProfile(); // Обновляем форму заказа при входе в корзину
+    }
+    if (page === 'favorites') renderFavoritesPage();
+    if (page === 'addresses') renderAddressesPage();
+    if (page === 'orderSuccess') renderOrderSuccessPage();
+    updateAllBadges();
+    updateAddressDisplay();
+}
 
-        // ========== ПРОФИЛЬ ==========
-        function loadProfileData() {
-            const savedName = localStorage.getItem('profileName');
-            const savedPhone = localStorage.getItem('profilePhone');
-            const savedPhoto = localStorage.getItem('profilePhoto');
-            if (savedName) document.getElementById('profileNameDisplay').textContent = savedName;
-            if (savedPhone) document.getElementById('profilePhoneDisplay').textContent = savedPhone;
-            if (savedPhoto) {
-                const avatar = document.getElementById('profileAvatarDisplay');
-                avatar.innerHTML = `<img src="${savedPhoto}" class="profile-avatar-img" alt="Profile">`;
-                avatar.style.background = 'none';
-            }
-        }
+// ========== ТЕМА ==========
+function setTheme(theme) {
+    document.body.classList.toggle('light-theme', theme === 'light');
+    document.querySelectorAll('.theme-option').forEach(btn => {
+        btn.classList.toggle('active', 
+            (theme === 'dark' && btn.textContent.includes('Тёмная')) ||
+            (theme === 'light' && btn.textContent.includes('Светлая'))
+        );
+    });
+    localStorage.setItem('theme', theme);
+}
 
-        function handleProfilePhotoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64 = e.target.result;
-                const avatar = document.getElementById('profileAvatarDisplay');
-                avatar.innerHTML = `<img src="${base64}" class="profile-avatar-img" alt="Profile">`;
-                avatar.style.background = 'none';
-                localStorage.setItem('profilePhoto', base64);
-                showToast('📸 Фото обновлено');
-            };
-            reader.readAsDataURL(file);
-        }
+// ========== АДРЕСА ==========
+function renderAddressesPage() {
+    const container = document.getElementById('addressesList');
+    container.innerHTML = addresses.map(addr => `
+        <div class="address-card ${addr.id === selectedAddress?.id ? 'active' : ''}" onclick="selectAddress(${addr.id})">
+            <span class="address-icon-big">${addr.id === selectedAddress?.id ? '📍' : '🏠'}</span>
+            <div class="address-details">
+                <div class="address-title">${addr.title}</div>
+                <div class="address-full">${addr.address}</div>
+            </div>
+            <div class="address-actions">
+                <button class="address-action" onclick="event.stopPropagation(); deleteAddress(${addr.id})">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
 
-        function startEditName() {
-            const nameDisplay = document.getElementById('profileNameDisplay');
-            const currentName = nameDisplay.textContent;
-            const container = nameDisplay.parentNode;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentName;
-            input.className = 'profile-name-input';
-            const saveBtn = document.createElement('button');
-            saveBtn.textContent = '✓';
-            saveBtn.className = 'profile-name-save';
-            saveBtn.onclick = function() {
-                const newName = input.value.trim();
-                if (newName) {
-                    nameDisplay.textContent = newName;
-                    localStorage.setItem('profileName', newName);
-                    showToast('👤 Имя сохранено');
-                }
-                container.innerHTML = `<h2 id="profileNameDisplay">${newName || currentName}</h2><button class="profile-name-edit" onclick="startEditName()">✏️</button>`;
-            };
-            container.innerHTML = '';
-            container.appendChild(input);
-            container.appendChild(saveBtn);
-            input.focus();
-        }
+function selectAddress(id) {
+    selectedAddress = addresses.find(a => a.id === id);
+    addresses.forEach(a => a.isDefault = (a.id === id));
+    localStorage.setItem('addresses', JSON.stringify(addresses));
+    renderAddressesPage();
+    updateAddressDisplay();
+    showToast('📍 Адрес выбран');
+}
 
-        function startEditPhone() {
-            const phoneDisplay = document.getElementById('profilePhoneDisplay');
-            const currentPhone = phoneDisplay.textContent;
-            const container = phoneDisplay.parentNode;
-            const input = document.createElement('input');
-            input.type = 'tel';
-            input.value = currentPhone;
-            input.className = 'profile-phone-input';
-            const saveBtn = document.createElement('button');
-            saveBtn.textContent = '✓';
-            saveBtn.className = 'profile-phone-save';
-            saveBtn.onclick = function() {
-                const newPhone = input.value.trim();
-                if (newPhone) {
-                    phoneDisplay.textContent = newPhone;
-                    localStorage.setItem('profilePhone', newPhone);
-                    showToast('📞 Номер сохранён');
-                }
-                container.innerHTML = `<p id="profilePhoneDisplay">${newPhone || currentPhone}</p><button class="profile-phone-edit" onclick="startEditPhone()">✏️</button>`;
-            };
-            container.innerHTML = '';
-            container.appendChild(input);
-            container.appendChild(saveBtn);
-            input.focus();
-        }
+function deleteAddress(id) {
+    if (addresses.length <= 1) {
+        showToast('❌ Должен быть хотя бы один адрес');
+        return;
+    }
+    addresses = addresses.filter(a => a.id !== id);
+    if (selectedAddress?.id === id) {
+        selectedAddress = addresses[0];
+        addresses[0].isDefault = true;
+    }
+    localStorage.setItem('addresses', JSON.stringify(addresses));
+    renderAddressesPage();
+    updateAddressDisplay();
+}
 
-        // ========== НАВИГАЦИЯ ==========
-        function navigateTo(page) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(page + 'Page').classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.page === page) item.classList.add('active');
-            });
-            if (page === 'home') renderProducts();
-            if (page === 'cart') renderCartPage();
-            if (page === 'favorites') renderFavoritesPage();
-            if (page === 'addresses') renderAddressesPage();
-            if (page === 'orderSuccess') renderOrderSuccessPage();
-            updateAllBadges();
-            updateAddressDisplay();
-        }
+function showAddressModal() {
+    document.getElementById('addressModal').style.display = 'flex';
+}
 
-        // ========== ТЕМА ==========
-        function setTheme(theme) {
-            document.body.classList.toggle('light-theme', theme === 'light');
-            document.querySelectorAll('.theme-option').forEach(btn => {
-                btn.classList.toggle('active', 
-                    (theme === 'dark' && btn.textContent.includes('Тёмная')) ||
-                    (theme === 'light' && btn.textContent.includes('Светлая'))
-                );
-            });
-            localStorage.setItem('theme', theme);
-        }
+function closeAddressModal() {
+    document.getElementById('addressModal').style.display = 'none';
+    document.getElementById('newAddressTitle').value = '';
+    document.getElementById('newAddressFull').value = '';
+}
 
-        // ========== АДРЕСА ==========
-        function renderAddressesPage() {
-            const container = document.getElementById('addressesList');
-            container.innerHTML = addresses.map(addr => `
-                <div class="address-card ${addr.id === selectedAddress?.id ? 'active' : ''}" onclick="selectAddress(${addr.id})">
-                    <span class="address-icon-big">${addr.id === selectedAddress?.id ? '📍' : '🏠'}</span>
-                    <div class="address-details">
-                        <div class="address-title">${addr.title}</div>
-                        <div class="address-full">${addr.address}</div>
+function saveNewAddress() {
+    const title = document.getElementById('newAddressTitle').value;
+    const address = document.getElementById('newAddressFull').value;
+    if (!title || !address) {
+        showToast('❌ Заполните все поля');
+        return;
+    }
+    const newId = Math.max(...addresses.map(a => a.id)) + 1;
+    addresses.push({ id: newId, title, address, isDefault: false });
+    localStorage.setItem('addresses', JSON.stringify(addresses));
+    closeAddressModal();
+    renderAddressesPage();
+    showToast('✅ Адрес добавлен');
+}
+
+function updateAddressDisplay() {
+    if (selectedAddress) {
+        document.getElementById('selectedAddressDisplay').textContent = selectedAddress.address;
+        const addrInput = document.getElementById('customerAddress');
+        if (addrInput) addrInput.value = selectedAddress.address;
+    }
+}
+
+// ========== ОПЛАТА ==========
+function selectPayment(element, method) {
+    document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('active'));
+    element.classList.add('active');
+    selectedPayment = method;
+    document.querySelectorAll('.payment-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.payment === method);
+    });
+    showToast(`💳 Выбрана оплата: ${method === 'card' ? 'Карта' : method === 'cash' ? 'Наличные' : 'СБП'}`);
+}
+
+// ========== ЗАКАЗ ==========
+function placeOrder() {
+    if (cart.length === 0) {
+        showToast('🛒 Корзина пуста!');
+        return;
+    }
+    const orderNumber = 'BUSTON-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    currentOrder = {
+        number: orderNumber,
+        items: [...cart],
+        total: total,
+        address: selectedAddress?.address || 'ул. Восточная, 15к2',
+        payment: selectedPayment,
+        name: document.getElementById('customerName').value || 'Гость',
+        phone: document.getElementById('customerPhone').value,
+        comment: document.getElementById('comment').value,
+        time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+    };
+    cart = [];
+    saveCart();
+    updateAllBadges();
+    navigateTo('orderSuccess');
+}
+
+function renderOrderSuccessPage() {
+    if (!currentOrder) {
+        navigateTo('home');
+        return;
+    }
+    document.getElementById('successOrderNumber').textContent = `Заказ #${currentOrder.number}`;
+    const itemsHtml = currentOrder.items.map(i => 
+        `<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>${i.emoji || '🍽️'} ${i.name} x${i.quantity}</span>
+            <span>${i.price * i.quantity} ₽</span>
+        </div>`
+    ).join('');
+    document.getElementById('successOrderDetails').innerHTML = `
+        ${itemsHtml}
+        <div style="border-top: 1px solid var(--border-color); margin: 12px 0; padding-top: 12px;">
+            <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                <span>Итого:</span>
+                <span>${currentOrder.total} ₽</span>
+            </div>
+        </div>
+        <div style="margin-top: 12px; color: var(--text-secondary); font-size: 14px;">
+            <div>📍 ${currentOrder.address}</div>
+            <div>👤 ${currentOrder.name}, ${currentOrder.phone}</div>
+            <div>💳 ${currentOrder.payment === 'card' ? 'Карта' : 'Наличные'}</div>
+        </div>
+    `;
+}
+
+function sendToWhatsApp() {
+    if (!currentOrder) return;
+    let message = `*🛵 НОВЫЙ ЗАКАЗ #${currentOrder.number}*\n\n`;
+    message += `*Клиент:* ${currentOrder.name}\n`;
+    message += `*Телефон:* ${currentOrder.phone}\n`;
+    message += `*Адрес:* ${currentOrder.address}\n`;
+    message += `*Оплата:* ${currentOrder.payment === 'card' ? 'Карта' : 'Наличные'}\n`;
+    if (currentOrder.comment) message += `*Комментарий:* ${currentOrder.comment}\n`;
+    message += `\n*Состав заказа:*\n`;
+    currentOrder.items.forEach(i => {
+        message += `• ${i.name} x${i.quantity} = ${i.price * i.quantity}₽\n`;
+    });
+    message += `\n*Итого: ${currentOrder.total} ₽*\n`;
+    message += `\n_Время: ${currentOrder.time}_`;
+    const url = `https://wa.me/${OWNER_PHONE}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+    showToast('📱 WhatsApp открыт');
+}
+
+// ========== АДМИНКА ==========
+function showPinModal() {
+    document.getElementById('pinModal').style.display = 'flex';
+    document.querySelectorAll('.pin-input').forEach(i => i.value = '');
+    document.getElementById('pinError').textContent = '';
+    document.getElementById('pin1').focus();
+}
+
+function closePinModal() {
+    document.getElementById('pinModal').style.display = 'none';
+}
+
+function moveToNext(current, nextId) {
+    if (current.value.length === 1 && nextId) {
+        document.getElementById(nextId).focus();
+    }
+}
+
+function checkPin() {
+    const pin = document.getElementById('pin1').value +
+               document.getElementById('pin2').value +
+               document.getElementById('pin3').value +
+               document.getElementById('pin4').value;
+    if (pin === ADMIN_PIN) {
+        isAdminAuthenticated = true;
+        document.getElementById('adminPanel').classList.add('visible');
+        closePinModal();
+        renderProducts();
+        showToast('🔓 Админ-панель разблокирована');
+    } else {
+        document.getElementById('pinError').textContent = 'Неверный PIN';
+    }
+}
+
+function logoutAdmin() {
+    isAdminAuthenticated = false;
+    document.getElementById('adminPanel').classList.remove('visible');
+    renderProducts();
+    showToast('🔒 Админ-панель скрыта');
+}
+
+function addNewProduct() {
+    if (!isAdminAuthenticated) { showPinModal(); return; }
+    const name = document.getElementById('newProductName').value;
+    const desc = document.getElementById('newProductDesc').value;
+    const price = parseInt(document.getElementById('newProductPrice').value);
+    const type = document.getElementById('newProductType').value;
+    const category = document.getElementById('newProductCategory').value;
+    const emoji = document.getElementById('newProductEmoji').value || '🍽️';
+    const img = document.getElementById('newProductImg').value;
+    if (!name || !price) { showToast('❌ Заполните название и цену'); return; }
+    const newId = Math.max(...products.map(p => p.id)) + 1;
+    products.push({ id: newId, name, desc, price, type, category, emoji, img });
+    saveProducts();
+    document.getElementById('newProductName').value = '';
+    document.getElementById('newProductDesc').value = '';
+    document.getElementById('newProductPrice').value = '';
+    document.getElementById('newProductEmoji').value = '🍽️';
+    document.getElementById('newProductImg').value = '';
+    document.getElementById('newImagePreview').style.display = 'none';
+    renderProducts();
+    showToast(`✅ ${name} добавлен`);
+}
+
+function deleteProduct(id) {
+    if (!isAdminAuthenticated) return;
+    products = products.filter(p => p.id !== id);
+    saveProducts();
+    renderProducts();
+    showToast('🗑️ Товар удален');
+}
+
+function editProduct(id) {
+    if (!isAdminAuthenticated) { showPinModal(); return; }
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+    document.getElementById('editProductId').value = id;
+    document.getElementById('editProductName').value = product.name;
+    document.getElementById('editProductDesc').value = product.desc;
+    document.getElementById('editProductPrice').value = product.price;
+    document.getElementById('editProductType').value = product.type;
+    document.getElementById('editProductCategory').value = product.category;
+    document.getElementById('editProductEmoji').value = product.emoji || '';
+    document.getElementById('editProductImg').value = product.img || '';
+    if (product.img && product.img.startsWith('data:image')) {
+        document.getElementById('editImagePreview').src = product.img;
+        document.getElementById('editImagePreview').style.display = 'block';
+    } else {
+        document.getElementById('editImagePreview').style.display = 'none';
+    }
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+function saveProduct() {
+    const id = parseInt(document.getElementById('editProductId').value);
+    const product = products.find(p => p.id === id);
+    if (product) {
+        product.name = document.getElementById('editProductName').value;
+        product.desc = document.getElementById('editProductDesc').value;
+        product.price = parseInt(document.getElementById('editProductPrice').value);
+        product.type = document.getElementById('editProductType').value;
+        product.category = document.getElementById('editProductCategory').value;
+        product.emoji = document.getElementById('editProductEmoji').value || '🍽️';
+        const newImg = document.getElementById('editProductImg').value;
+        if (newImg) product.img = newImg;
+        saveProducts();
+        renderProducts();
+        showToast('✅ Изменения сохранены');
+    }
+    closeEditModal();
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+function saveProducts() {
+    localStorage.setItem('products', JSON.stringify(products));
+}
+
+// ========== КОРЗИНА ==========
+function addToCart(productId, event) {
+    if (event) event.stopPropagation();
+    const product = products.find(p => p.id === productId);
+    const existing = cart.find(item => item.id === productId);
+    existing ? existing.quantity++ : cart.push({ ...product, quantity: 1 });
+    saveCart();
+    showToast(`🔥 ${product.name} добавлен`);
+    updateAllBadges();
+    if (document.getElementById('cartPage').classList.contains('active')) renderCartPage();
+}
+
+function updateCartItem(productId, delta) {
+    const item = cart.find(i => i.id === productId);
+    if (item) {
+        item.quantity += delta;
+        if (item.quantity <= 0) cart = cart.filter(i => i.id !== productId);
+        saveCart();
+        renderCartPage();
+        updateAllBadges();
+    }
+}
+
+function clearCart() {
+    cart = [];
+    saveCart();
+    renderCartPage();
+    updateAllBadges();
+    showToast('🛒 Корзина очищена');
+}
+
+function renderCartPage() {
+    const container = document.getElementById('cartItemsList');
+    if (cart.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">🛒 Корзина пуста</div>`;
+        document.getElementById('subtotalAmount').textContent = '0 ₽';
+        document.getElementById('totalAmount').textContent = '0 ₽';
+        document.getElementById('checkoutBtn').disabled = true;
+        return;
+    }
+    container.innerHTML = cart.map(item => `
+        <div class="cart-item">
+            <div class="cart-item-emoji">${item.img ? `<img src="${item.img}" onerror="this.onerror=null; this.parentElement.innerHTML='${item.emoji || '🍽️'}';">` : (item.emoji || '🍽️')}</div>
+            <div class="cart-item-info">
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-price">${item.price} ₽ / шт</div>
+            </div>
+            <div class="cart-item-controls">
+                <button class="qty-btn minus" onclick="updateCartItem(${item.id}, -1)">−</button>
+                <span class="cart-item-qty">${item.quantity}</span>
+                <button class="qty-btn plus" onclick="updateCartItem(${item.id}, 1)">+</button>
+            </div>
+            <div class="cart-item-total">${item.price * item.quantity} ₽</div>
+        </div>
+    `).join('');
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    document.getElementById('subtotalAmount').textContent = `${subtotal} ₽`;
+    document.getElementById('totalAmount').textContent = `${subtotal} ₽`;
+    document.getElementById('checkoutBtn').disabled = false;
+}
+
+// ========== ИЗБРАННОЕ ==========
+function toggleFavorite(productId, event) {
+    event.stopPropagation();
+    const index = favorites.indexOf(productId);
+    index > -1 ? favorites.splice(index, 1) : favorites.push(productId);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    renderProducts();
+    if (document.getElementById('favoritesPage').classList.contains('active')) renderFavoritesPage();
+    showToast(index > -1 ? '💔 Удалено' : '❤️ Добавлено');
+}
+
+function renderFavoritesPage() {
+    const favProducts = products.filter(p => favorites.includes(p.id));
+    const grid = document.getElementById('favoritesGrid');
+    if (favProducts.length === 0) {
+        grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted);">❤️ Добавьте любимые блюда</div>`;
+        return;
+    }
+    grid.innerHTML = favProducts.map(p => `
+        <div class="product-card">
+            <div class="product-img">
+                ${getProductImageHTML(p)}
+                <span class="product-type">${p.type === 'cafe' ? '🥩 КАФЕ' : '🛒 МАГАЗИН'}</span>
+                <div class="favorite-btn active" onclick="toggleFavorite(${p.id}, event)">❤️</div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">${p.name}</div>
+                <div class="product-desc">${p.desc}</div>
+                <div class="product-footer">
+                    <span class="product-price">${p.price} ₽</span>
+                    <button class="add-to-cart" onclick="addToCart(${p.id}, event)">+</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ========== ТОВАРЫ ==========
+function renderCategories() {
+    document.getElementById('categoriesScroll').innerHTML = categories.map(cat => `
+        <div class="cat-item ${activeCategory === cat.id ? 'active' : ''}" onclick="setCategory('${cat.id}')">
+            <div class="cat-emoji">${cat.emoji}</div>
+            <span class="cat-name">${cat.name}</span>
+        </div>
+    `).join('');
+}
+
+function setCategory(catId) {
+    activeCategory = catId;
+    renderCategories();
+    renderProducts();
+}
+
+function renderProducts() {
+    let filtered = products.filter(p => {
+        if (activeMode === 'cafe' && p.type !== 'cafe') return false;
+        if (activeMode === 'market' && p.type !== 'market') return false;
+        if (activeCategory !== 'all' && p.category !== activeCategory) return false;
+        if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+        return true;
+    });
+    const grid = document.getElementById('productsGrid');
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted);">🍽️ Ничего не найдено</div>`;
+        return;
+    }
+    grid.innerHTML = filtered.map(p => {
+        const isFavorite = favorites.includes(p.id);
+        const adminControls = isAdminAuthenticated ? `
+            <div class="admin-controls">
+                <button class="admin-btn edit" onclick="editProduct(${p.id}); event.stopPropagation();">✏️</button>
+                <button class="admin-btn delete" onclick="deleteProduct(${p.id}); event.stopPropagation();">🗑️</button>
+            </div>
+        ` : '';
+        return `
+            <div class="product-card">
+                <div class="product-img">
+                    ${getProductImageHTML(p)}
+                    <span class="product-type">${p.type === 'cafe' ? '☕ КАФЕ' : '🛒 МАГАЗИН'}</span>
+                    <div class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite(${p.id}, event)">
+                        ${isFavorite ? '❤️' : '🤍'}
                     </div>
-                    <div class="address-actions">
-                        <button class="address-action" onclick="event.stopPropagation(); deleteAddress(${addr.id})">🗑️</button>
+                    ${adminControls}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-desc">${p.desc}</div>
+                    <div class="product-footer">
+                        <span class="product-price">${p.price} ₽</span>
+                        <button class="add-to-cart" onclick="addToCart(${p.id}, event)">+</button>
                     </div>
                 </div>
-            `).join('');
-        }
+            </div>
+        `;
+    }).join('');
+}
 
-        function selectAddress(id) {
-            selectedAddress = addresses.find(a => a.id === id);
-            addresses.forEach(a => a.isDefault = (a.id === id));
-            localStorage.setItem('addresses', JSON.stringify(addresses));
-            renderAddressesPage();
-            updateAddressDisplay();
-            showToast('📍 Адрес выбран');
-        }
+// ========== ВСПОМОГАТЕЛЬНЫЕ ==========
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
 
-        function deleteAddress(id) {
-            if (addresses.length <= 1) {
-                showToast('❌ Должен быть хотя бы один адрес');
-                return;
-            }
-            addresses = addresses.filter(a => a.id !== id);
-            if (selectedAddress?.id === id) {
-                selectedAddress = addresses[0];
-                addresses[0].isDefault = true;
-            }
-            localStorage.setItem('addresses', JSON.stringify(addresses));
-            renderAddressesPage();
-            updateAddressDisplay();
-        }
+function updateAllBadges() {
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById('headerCartBadge').textContent = totalItems;
+    document.getElementById('navCartBadge').textContent = totalItems;
+}
 
-        function showAddressModal() {
-            document.getElementById('addressModal').style.display = 'flex';
-        }
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1500);
+}
 
-        function closeAddressModal() {
-            document.getElementById('addressModal').style.display = 'none';
-            document.getElementById('newAddressTitle').value = '';
-            document.getElementById('newAddressFull').value = '';
-        }
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
+document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+    loadProfileData();
+    renderCategories();
+    renderProducts();
+    updateAllBadges();
+    updateAddressDisplay();
+    // Дополнительная синхронизация для формы заказа на случай, если страница корзины открыта сразу
+    updateCheckoutFormFromProfile();
 
-        function saveNewAddress() {
-            const title = document.getElementById('newAddressTitle').value;
-            const address = document.getElementById('newAddressFull').value;
-            if (!title || !address) {
-                showToast('❌ Заполните все поля');
-                return;
-            }
-            const newId = Math.max(...addresses.map(a => a.id)) + 1;
-            addresses.push({ id: newId, title, address, isDefault: false });
-            localStorage.setItem('addresses', JSON.stringify(addresses));
-            closeAddressModal();
-            renderAddressesPage();
-            showToast('✅ Адрес добавлен');
-        }
-
-        function updateAddressDisplay() {
-            if (selectedAddress) {
-                document.getElementById('selectedAddressDisplay').textContent = selectedAddress.address;
-                const addrInput = document.getElementById('customerAddress');
-                if (addrInput) addrInput.value = selectedAddress.address;
-            }
-        }
-
-        // ========== ОПЛАТА ==========
-        function selectPayment(element, method) {
-            document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-            selectedPayment = method;
-            document.querySelectorAll('.payment-option').forEach(opt => {
-                opt.classList.toggle('active', opt.dataset.payment === method);
-            });
-            showToast(`💳 Выбрана оплата: ${method === 'card' ? 'Карта' : method === 'cash' ? 'Наличные' : 'СБП'}`);
-        }
-
-        // ========== ЗАКАЗ ==========
-        function placeOrder() {
-            if (cart.length === 0) {
-                showToast('🛒 Корзина пуста!');
-                return;
-            }
-            const orderNumber = 'BUSTON-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            currentOrder = {
-                number: orderNumber,
-                items: [...cart],
-                total: total,
-                address: selectedAddress?.address || 'ул. Восточная, 15к2',
-                payment: selectedPayment,
-                name: document.getElementById('customerName').value || 'Гость',
-                phone: document.getElementById('customerPhone').value,
-                comment: document.getElementById('comment').value,
-                time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
-            };
-            cart = [];
-            saveCart();
-            updateAllBadges();
-            navigateTo('orderSuccess');
-        }
-
-        function renderOrderSuccessPage() {
-            if (!currentOrder) {
-                navigateTo('home');
-                return;
-            }
-            document.getElementById('successOrderNumber').textContent = `Заказ #${currentOrder.number}`;
-            const itemsHtml = currentOrder.items.map(i => 
-                `<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span>${i.emoji || '🍽️'} ${i.name} x${i.quantity}</span>
-                    <span>${i.price * i.quantity} ₽</span>
-                </div>`
-            ).join('');
-            document.getElementById('successOrderDetails').innerHTML = `
-                ${itemsHtml}
-                <div style="border-top: 1px solid var(--border-color); margin: 12px 0; padding-top: 12px;">
-                    <div style="display: flex; justify-content: space-between; font-weight: 700;">
-                        <span>Итого:</span>
-                        <span>${currentOrder.total} ₽</span>
-                    </div>
-                </div>
-                <div style="margin-top: 12px; color: var(--text-secondary); font-size: 14px;">
-                    <div>📍 ${currentOrder.address}</div>
-                    <div>👤 ${currentOrder.name}, ${currentOrder.phone}</div>
-                    <div>💳 ${currentOrder.payment === 'card' ? 'Карта' : 'Наличные'}</div>
-                </div>
-            `;
-        }
-
-        function sendToWhatsApp() {
-            if (!currentOrder) return;
-            let message = `*🛵 НОВЫЙ ЗАКАЗ #${currentOrder.number}*\n\n`;
-            message += `*Клиент:* ${currentOrder.name}\n`;
-            message += `*Телефон:* ${currentOrder.phone}\n`;
-            message += `*Адрес:* ${currentOrder.address}\n`;
-            message += `*Оплата:* ${currentOrder.payment === 'card' ? 'Карта' : 'Наличные'}\n`;
-            if (currentOrder.comment) message += `*Комментарий:* ${currentOrder.comment}\n`;
-            message += `\n*Состав заказа:*\n`;
-            currentOrder.items.forEach(i => {
-                message += `• ${i.name} x${i.quantity} = ${i.price * i.quantity}₽\n`;
-            });
-            message += `\n*Итого: ${currentOrder.total} ₽*\n`;
-            message += `\n_Время: ${currentOrder.time}_`;
-            const url = `https://wa.me/${OWNER_PHONE}?text=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
-            showToast('📱 WhatsApp открыт');
-        }
-
-        // ========== АДМИНКА ==========
-        function showPinModal() {
-            document.getElementById('pinModal').style.display = 'flex';
-            document.querySelectorAll('.pin-input').forEach(i => i.value = '');
-            document.getElementById('pinError').textContent = '';
-            document.getElementById('pin1').focus();
-        }
-
-        function closePinModal() {
-            document.getElementById('pinModal').style.display = 'none';
-        }
-
-        function moveToNext(current, nextId) {
-            if (current.value.length === 1 && nextId) {
-                document.getElementById(nextId).focus();
-            }
-        }
-
-        function checkPin() {
-            const pin = document.getElementById('pin1').value +
-                       document.getElementById('pin2').value +
-                       document.getElementById('pin3').value +
-                       document.getElementById('pin4').value;
-            if (pin === ADMIN_PIN) {
-                isAdminAuthenticated = true;
-                document.getElementById('adminPanel').classList.add('visible');
-                closePinModal();
-                renderProducts();
-                showToast('🔓 Админ-панель разблокирована');
-            } else {
-                document.getElementById('pinError').textContent = 'Неверный PIN';
-            }
-        }
-
-        function logoutAdmin() {
-            isAdminAuthenticated = false;
-            document.getElementById('adminPanel').classList.remove('visible');
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeMode = btn.dataset.mode;
             renderProducts();
-            showToast('🔒 Админ-панель скрыта');
-        }
-
-        function addNewProduct() {
-            if (!isAdminAuthenticated) { showPinModal(); return; }
-            const name = document.getElementById('newProductName').value;
-            const desc = document.getElementById('newProductDesc').value;
-            const price = parseInt(document.getElementById('newProductPrice').value);
-            const type = document.getElementById('newProductType').value;
-            const category = document.getElementById('newProductCategory').value;
-            const emoji = document.getElementById('newProductEmoji').value || '🍽️';
-            const img = document.getElementById('newProductImg').value;
-            if (!name || !price) { showToast('❌ Заполните название и цену'); return; }
-            const newId = Math.max(...products.map(p => p.id)) + 1;
-            products.push({ id: newId, name, desc, price, type, category, emoji, img });
-            saveProducts();
-            document.getElementById('newProductName').value = '';
-            document.getElementById('newProductDesc').value = '';
-            document.getElementById('newProductPrice').value = '';
-            document.getElementById('newProductEmoji').value = '🍽️';
-            document.getElementById('newProductImg').value = '';
-            document.getElementById('newImagePreview').style.display = 'none';
-            renderProducts();
-            showToast(`✅ ${name} добавлен`);
-        }
-
-        function deleteProduct(id) {
-            if (!isAdminAuthenticated) return;
-            products = products.filter(p => p.id !== id);
-            saveProducts();
-            renderProducts();
-            showToast('🗑️ Товар удален');
-        }
-
-        function editProduct(id) {
-            if (!isAdminAuthenticated) { showPinModal(); return; }
-            const product = products.find(p => p.id === id);
-            if (!product) return;
-            document.getElementById('editProductId').value = id;
-            document.getElementById('editProductName').value = product.name;
-            document.getElementById('editProductDesc').value = product.desc;
-            document.getElementById('editProductPrice').value = product.price;
-            document.getElementById('editProductType').value = product.type;
-            document.getElementById('editProductCategory').value = product.category;
-            document.getElementById('editProductEmoji').value = product.emoji || '';
-            document.getElementById('editProductImg').value = product.img || '';
-            if (product.img && product.img.startsWith('data:image')) {
-                document.getElementById('editImagePreview').src = product.img;
-                document.getElementById('editImagePreview').style.display = 'block';
-            } else {
-                document.getElementById('editImagePreview').style.display = 'none';
-            }
-            document.getElementById('editModal').style.display = 'flex';
-        }
-
-        function saveProduct() {
-            const id = parseInt(document.getElementById('editProductId').value);
-            const product = products.find(p => p.id === id);
-            if (product) {
-                product.name = document.getElementById('editProductName').value;
-                product.desc = document.getElementById('editProductDesc').value;
-                product.price = parseInt(document.getElementById('editProductPrice').value);
-                product.type = document.getElementById('editProductType').value;
-                product.category = document.getElementById('editProductCategory').value;
-                product.emoji = document.getElementById('editProductEmoji').value || '🍽️';
-                const newImg = document.getElementById('editProductImg').value;
-                if (newImg) product.img = newImg;
-                saveProducts();
-                renderProducts();
-                showToast('✅ Изменения сохранены');
-            }
-            closeEditModal();
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-
-        function saveProducts() {
-            localStorage.setItem('products', JSON.stringify(products));
-        }
-
-        // ========== КОРЗИНА ==========
-        function addToCart(productId, event) {
-            if (event) event.stopPropagation();
-            const product = products.find(p => p.id === productId);
-            const existing = cart.find(item => item.id === productId);
-            existing ? existing.quantity++ : cart.push({ ...product, quantity: 1 });
-            saveCart();
-            showToast(`🔥 ${product.name} добавлен`);
-            updateAllBadges();
-            if (document.getElementById('cartPage').classList.contains('active')) renderCartPage();
-        }
-
-        function updateCartItem(productId, delta) {
-            const item = cart.find(i => i.id === productId);
-            if (item) {
-                item.quantity += delta;
-                if (item.quantity <= 0) cart = cart.filter(i => i.id !== productId);
-                saveCart();
-                renderCartPage();
-                updateAllBadges();
-            }
-        }
-
-        function clearCart() {
-            cart = [];
-            saveCart();
-            renderCartPage();
-            updateAllBadges();
-            showToast('🛒 Корзина очищена');
-        }
-
-        function renderCartPage() {
-            const container = document.getElementById('cartItemsList');
-            if (cart.length === 0) {
-                container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">🛒 Корзина пуста</div>`;
-                document.getElementById('subtotalAmount').textContent = '0 ₽';
-                document.getElementById('totalAmount').textContent = '0 ₽';
-                document.getElementById('checkoutBtn').disabled = true;
-                return;
-            }
-            container.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <div class="cart-item-emoji">${item.img ? `<img src="${item.img}" onerror="this.onerror=null; this.parentElement.innerHTML='${item.emoji || '🍽️'}';">` : (item.emoji || '🍽️')}</div>
-                    <div class="cart-item-info">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">${item.price} ₽ / шт</div>
-                    </div>
-                    <div class="cart-item-controls">
-                        <button class="qty-btn minus" onclick="updateCartItem(${item.id}, -1)">−</button>
-                        <span class="cart-item-qty">${item.quantity}</span>
-                        <button class="qty-btn plus" onclick="updateCartItem(${item.id}, 1)">+</button>
-                    </div>
-                    <div class="cart-item-total">${item.price * item.quantity} ₽</div>
-                </div>
-            `).join('');
-            const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            document.getElementById('subtotalAmount').textContent = `${subtotal} ₽`;
-            document.getElementById('totalAmount').textContent = `${subtotal} ₽`;
-            document.getElementById('checkoutBtn').disabled = false;
-        }
-
-        // ========== ИЗБРАННОЕ ==========
-        function toggleFavorite(productId, event) {
-            event.stopPropagation();
-            const index = favorites.indexOf(productId);
-            index > -1 ? favorites.splice(index, 1) : favorites.push(productId);
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            renderProducts();
-            if (document.getElementById('favoritesPage').classList.contains('active')) renderFavoritesPage();
-            showToast(index > -1 ? '💔 Удалено' : '❤️ Добавлено');
-        }
-
-        function renderFavoritesPage() {
-            const favProducts = products.filter(p => favorites.includes(p.id));
-            const grid = document.getElementById('favoritesGrid');
-            if (favProducts.length === 0) {
-                grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted);">❤️ Добавьте любимые блюда</div>`;
-                return;
-            }
-            grid.innerHTML = favProducts.map(p => `
-                <div class="product-card">
-                    <div class="product-img">
-                        ${getProductImageHTML(p)}
-                        <span class="product-type">${p.type === 'cafe' ? '🥩 КАФЕ' : '🛒 МАГАЗИН'}</span>
-                        <div class="favorite-btn active" onclick="toggleFavorite(${p.id}, event)">❤️</div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">${p.name}</div>
-                        <div class="product-desc">${p.desc}</div>
-                        <div class="product-footer">
-                            <span class="product-price">${p.price} ₽</span>
-                            <button class="add-to-cart" onclick="addToCart(${p.id}, event)">+</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ========== ТОВАРЫ ==========
-        function renderCategories() {
-            document.getElementById('categoriesScroll').innerHTML = categories.map(cat => `
-                <div class="cat-item ${activeCategory === cat.id ? 'active' : ''}" onclick="setCategory('${cat.id}')">
-                    <div class="cat-emoji">${cat.emoji}</div>
-                    <span class="cat-name">${cat.name}</span>
-                </div>
-            `).join('');
-        }
-
-        function setCategory(catId) {
-            activeCategory = catId;
-            renderCategories();
-            renderProducts();
-        }
-
-        function renderProducts() {
-            let filtered = products.filter(p => {
-                if (activeMode === 'cafe' && p.type !== 'cafe') return false;
-                if (activeMode === 'market' && p.type !== 'market') return false;
-                if (activeCategory !== 'all' && p.category !== activeCategory) return false;
-                if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-                return true;
-            });
-            const grid = document.getElementById('productsGrid');
-            if (filtered.length === 0) {
-                grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted);">🍽️ Ничего не найдено</div>`;
-                return;
-            }
-            grid.innerHTML = filtered.map(p => {
-                const isFavorite = favorites.includes(p.id);
-                const adminControls = isAdminAuthenticated ? `
-                    <div class="admin-controls">
-                        <button class="admin-btn edit" onclick="editProduct(${p.id}); event.stopPropagation();">✏️</button>
-                        <button class="admin-btn delete" onclick="deleteProduct(${p.id}); event.stopPropagation();">🗑️</button>
-                    </div>
-                ` : '';
-                return `
-                    <div class="product-card">
-                        <div class="product-img">
-                            ${getProductImageHTML(p)}
-                            <span class="product-type">${p.type === 'cafe' ? '☕ КАФЕ' : '🛒 МАГАЗИН'}</span>
-                            <div class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite(${p.id}, event)">
-                                ${isFavorite ? '❤️' : '🤍'}
-                            </div>
-                            ${adminControls}
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">${p.name}</div>
-                            <div class="product-desc">${p.desc}</div>
-                            <div class="product-footer">
-                                <span class="product-price">${p.price} ₽</span>
-                                <button class="add-to-cart" onclick="addToCart(${p.id}, event)">+</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ========== ВСПОМОГАТЕЛЬНЫЕ ==========
-        function saveCart() {
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-
-        function updateAllBadges() {
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('headerCartBadge').textContent = totalItems;
-            document.getElementById('navCartBadge').textContent = totalItems;
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 1500);
-        }
-
-        // ========== ИНИЦИАЛИЗАЦИЯ ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            setTheme(savedTheme);
-            loadProfileData();
-            renderCategories();
-            renderProducts();
-            updateAllBadges();
-            updateAddressDisplay();
-
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    activeMode = btn.dataset.mode;
-                    renderProducts();
-                });
-            });
-
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                searchQuery = e.target.value;
-                renderProducts();
-            });
-
-            document.querySelectorAll('.payment-option').forEach(opt => {
-                opt.addEventListener('click', function() {
-                    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('active'));
-                    this.classList.add('active');
-                    selectedPayment = this.dataset.payment;
-                });
-            });
-
-            document.querySelectorAll('.pin-input').forEach(input => {
-                input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') checkPin();
-                });
-            });
         });
+    });
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderProducts();
+    });
+
+    document.querySelectorAll('.payment-option').forEach(opt => {
+        opt.addEventListener('click', function() {
+            document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+            selectedPayment = this.dataset.payment;
+        });
+    });
+
+    document.querySelectorAll('.pin-input').forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkPin();
+        });
+    });
+});
     </script>
 </body>
 </html>
