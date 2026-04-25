@@ -620,7 +620,7 @@
             color: #0c0b0a;
         }
 
-        /* Корзина */
+        /* Корзина — ИСПРАВЛЕННЫЙ CSS (цены не вылезают) */
         .cart-page { padding: 0 16px; }
         .cart-header {
             display: flex;
@@ -650,21 +650,39 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-wrap: wrap;
         }
-        .cart-item-emoji { font-size: 36px; min-width: 45px; text-align: center; }
+        .cart-item-emoji { 
+            font-size: 36px; 
+            min-width: 45px; 
+            text-align: center; 
+            flex-shrink: 0;
+        }
         .cart-item-emoji img {
             width: 45px;
             height: 45px;
             object-fit: cover;
             border-radius: 12px;
         }
-        .cart-item-info { flex: 1; }
-        .cart-item-name { font-weight: 600; margin-bottom: 4px; }
-        .cart-item-price { color: var(--accent-gold); font-weight: 600; font-size: 14px; }
+        .cart-item-info { 
+            flex: 1; 
+            min-width: 100px;
+        }
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+        .cart-item-price {
+            color: var(--accent-gold);
+            font-weight: 600;
+            font-size: 14px;
+        }
         .cart-item-controls {
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-shrink: 0;
         }
         .qty-btn {
             width: 36px;
@@ -685,6 +703,15 @@
             color: var(--accent-gold);
             min-width: 70px;
             text-align: right;
+            flex-shrink: 0;
+        }
+        @media (max-width: 400px) {
+            .cart-item-info {
+                min-width: 120px;
+            }
+            .cart-item-total {
+                margin-left: auto;
+            }
         }
 
         .cart-summary {
@@ -1164,8 +1191,9 @@
                     <div class="form-group">
                         <label class="form-label">Способ оплаты</label>
                         <div class="payment-methods">
-                            <div class="payment-option active" data-payment="card">💳 Карта</div>
-                            <div class="payment-option" data-payment="cash">💵 Наличные</div>
+                            <!-- Активный класс теперь на наличных (cash) -->
+                            <div class="payment-option" data-payment="card">💳 Карта</div>
+                            <div class="payment-option active" data-payment="cash">💵 Наличные</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -1210,22 +1238,22 @@
                 <div class="page-title">💳 Способы оплаты</div>
             </div>
             <div class="payment-methods-list">
-                <div class="payment-card active" onclick="selectPayment(this, 'card')">
+                <div class="payment-card" onclick="selectPayment(this, 'card')">
                     <span class="payment-icon">💳</span>
                     <div class="payment-details">
                         <div class="payment-subtitle">Оплата при получении</div>
                         <div class="payment-title">Банковская карта</div>
                         <div class="payment-subtitle">Visa, Mastercard, МИР</div>
                     </div>
-                    <span>✓</span>
+                    <span></span>
                 </div>
-                <div class="payment-card" onclick="selectPayment(this, 'cash')">
+                <div class="payment-card active" onclick="selectPayment(this, 'cash')">
                     <span class="payment-icon">💵</span>
                     <div class="payment-details">
                         <div class="payment-title">Наличные</div>
                         <div class="payment-subtitle">Оплата при получении</div>
                     </div>
-                    <span></span>
+                    <span>✓</span>
                 </div>
                 <div class="payment-card" onclick="selectPayment(this, 'sbp')">
                     <span class="payment-icon">📱</span>
@@ -1348,7 +1376,7 @@
     </div>
 
     <script>
-       // ========== ДАННЫЕ (локальные файлы) ==========
+// ========== ДАННЫЕ (локальные файлы) ==========
 let products = JSON.parse(localStorage.getItem('products')) || [
     { id: 1, name: 'Шурпа из говядины', desc: '400г ·', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
     { id: 2, name: 'Люля-кебаб', desc: '1 шт · говядина', price: 200, type: 'cafe', category: 'shashlik', img: "Люля-кебаб.webp", emoji: '🍡' },
@@ -1386,7 +1414,8 @@ let addresses = JSON.parse(localStorage.getItem('addresses')) || [
     { id: 2, title: 'Работа', address: 'ул. Ленина, 10, офис 305', isDefault: false }
 ];
 let selectedAddress = addresses.find(a => a.isDefault) || addresses[0];
-let selectedPayment = 'card';
+// ОПЛАТА ПО УМОЛЧАНИЮ - НАЛИЧНЫЕ
+let selectedPayment = 'cash';
 let activeMode = 'all';
 let activeCategory = 'all';
 let searchQuery = '';
@@ -1430,6 +1459,37 @@ function handleEditImageUpload(event) {
     reader.readAsDataURL(file);
 }
 
+// ========== СОХРАНЕНИЕ ВЫБРАННОГО СПОСОБА ОПЛАТЫ ==========
+function saveSelectedPayment() {
+    localStorage.setItem('selectedPayment', selectedPayment);
+}
+
+function loadSelectedPayment() {
+    const saved = localStorage.getItem('selectedPayment');
+    if (saved && ['card', 'cash', 'sbp'].includes(saved)) {
+        selectedPayment = saved;
+    } else {
+        selectedPayment = 'cash';
+    }
+    // Обновить активные классы в корзине
+    document.querySelectorAll('.payment-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.payment === selectedPayment);
+    });
+    // Обновить активные классы на странице способов оплаты
+    document.querySelectorAll('.payment-card').forEach(card => {
+        const method = card.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+        if (method === selectedPayment) {
+            card.classList.add('active');
+            const checkSpan = card.querySelector('span:last-child');
+            if (checkSpan) checkSpan.textContent = '✓';
+        } else {
+            card.classList.remove('active');
+            const checkSpan = card.querySelector('span:last-child');
+            if (checkSpan && checkSpan.textContent === '✓') checkSpan.textContent = '';
+        }
+    });
+}
+
 // ========== СИНХРОНИЗАЦИЯ ДАННЫХ ПРОФИЛЯ В ФОРМУ ЗАКАЗА ==========
 function updateCheckoutFormFromProfile() {
     const savedName = localStorage.getItem('profileName');
@@ -1456,7 +1516,6 @@ function loadProfileData() {
         avatar.innerHTML = `<img src="${savedPhoto}" class="profile-avatar-img" alt="Profile">`;
         avatar.style.background = 'none';
     }
-    // Обновляем форму заказа при загрузке профиля
     updateCheckoutFormFromProfile();
 }
 
@@ -1491,7 +1550,7 @@ function startEditName() {
         if (newName) {
             nameDisplay.textContent = newName;
             localStorage.setItem('profileName', newName);
-            updateCheckoutFormFromProfile(); // Синхронизация с формой заказа
+            updateCheckoutFormFromProfile();
             showToast('👤 Имя сохранено');
         }
         container.innerHTML = `<h2 id="profileNameDisplay">${newName || currentName}</h2><button class="profile-name-edit" onclick="startEditName()">✏️</button>`;
@@ -1518,7 +1577,7 @@ function startEditPhone() {
         if (newPhone) {
             phoneDisplay.textContent = newPhone;
             localStorage.setItem('profilePhone', newPhone);
-            updateCheckoutFormFromProfile(); // Синхронизация с формой заказа
+            updateCheckoutFormFromProfile();
             showToast('📞 Номер сохранён');
         }
         container.innerHTML = `<p id="profilePhoneDisplay">${newPhone || currentPhone}</p><button class="profile-phone-edit" onclick="startEditPhone()">✏️</button>`;
@@ -1540,7 +1599,7 @@ function navigateTo(page) {
     if (page === 'home') renderProducts();
     if (page === 'cart') {
         renderCartPage();
-        updateCheckoutFormFromProfile(); // Обновляем форму заказа при входе в корзину
+        updateCheckoutFormFromProfile();
     }
     if (page === 'favorites') renderFavoritesPage();
     if (page === 'addresses') renderAddressesPage();
@@ -1635,11 +1694,13 @@ function updateAddressDisplay() {
     }
 }
 
-// ========== ОПЛАТА ==========
+// ========== ОПЛАТА (с сохранением) ==========
 function selectPayment(element, method) {
     document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('active'));
     element.classList.add('active');
     selectedPayment = method;
+    saveSelectedPayment();
+    // Синхронизация с корзиной
     document.querySelectorAll('.payment-option').forEach(opt => {
         opt.classList.toggle('active', opt.dataset.payment === method);
     });
@@ -2023,8 +2084,10 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProducts();
     updateAllBadges();
     updateAddressDisplay();
-    // Дополнительная синхронизация для формы заказа на случай, если страница корзины открыта сразу
     updateCheckoutFormFromProfile();
+
+    // Загружаем сохранённый способ оплаты
+    loadSelectedPayment();
 
     document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2045,6 +2108,20 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('active'));
             this.classList.add('active');
             selectedPayment = this.dataset.payment;
+            saveSelectedPayment();
+            // Синхронизация со страницей способов оплаты
+            document.querySelectorAll('.payment-card').forEach(card => {
+                const method = card.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+                if (method === selectedPayment) {
+                    card.classList.add('active');
+                    const checkSpan = card.querySelector('span:last-child');
+                    if (checkSpan) checkSpan.textContent = '✓';
+                } else {
+                    card.classList.remove('active');
+                    const checkSpan = card.querySelector('span:last-child');
+                    if (checkSpan && checkSpan.textContent === '✓') checkSpan.textContent = '';
+                }
+            });
         });
     });
 
