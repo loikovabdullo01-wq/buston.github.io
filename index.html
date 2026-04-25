@@ -1378,20 +1378,132 @@
     <script>
 // ========== ДАННЫЕ (локальные файлы) ==========
 let products = JSON.parse(localStorage.getItem('products')) || [
-    { id: 1, name: 'Шурпа из говядины', desc: '400г ·', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
+    // --- СТАРЫЕ ТОВАРЫ (с сохранением локальных картинок) ---
+    { id: 1, name: 'Шурпа из говядины', desc: '400г', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
     { id: 2, name: 'Люля-кебаб', desc: '1 шт · говядина', price: 200, type: 'cafe', category: 'shashlik', img: "Люля-кебаб.webp", emoji: '🍡' },
     { id: 3, name: 'Манты', desc: '350г · 5 шт', price: 300, type: 'cafe', category: 'dish', img: "манты.jpg", emoji: '🍜' },
     { id: 4, name: 'Плов с говядины', desc: '450г · с нутом', price: 300, type: 'cafe', category: 'dish', img: "333.webp", emoji: '🍚' },
     { id: 5, name: 'Самса с мясом', desc: '2 шт · тандыр', price: 280, type: 'cafe', category: 'bakery', img: "444.png", emoji: '🥟' },
     { id: 6, name: 'Хачапури', desc: '300г · яйцо', price: 420, type: 'cafe', category: 'bakery', img: "555.jpg", emoji: '🥐' },
-    { id: 7, name: 'RC colla 05', desc: '05л · натуральный', price: 100, type: 'cafe', category: 'drinks', img: "арс.webp", emoji: '🥛' },
-    { id: 7.5, name: 'RC colla 05', desc: '05л · натуральный', price: 100, type: 'cafe', category: 'drinks', img: "арсс.jpg", emoji: '🥛' },
-    { id: 8, name: 'Гранатовый сок', desc: '0.5л · свежий', price: 290, type: 'cafe', category: 'drinks', img: '', emoji: '🧃' },
-    { id: 12, name: 'Рис Девзира', desc: '900г · для плова', price: 320, type: 'market', category: 'grocery', img: '', emoji: '🍚' },
-    { id: 13, name: 'Масло сливочное', desc: '82.5% · 180г', price: 240, type: 'market', category: 'grocery', img: '', emoji: '🧈' },
-    { id: 14, name: 'Молоко 3.2%', desc: '1л', price: 110, type: 'market', category: 'grocery', img: '', emoji: '🥛' },
-    { id: 18, name: 'Помидоры', desc: '1кг · грунтовые', price: 220, type: 'market', category: 'grocery', img: '', emoji: '🍅' },
-    { id: 19, name: 'Огурцы', desc: '1кг · свежие', price: 190, type: 'market', category: 'grocery', img: '', emoji: '🥒' }
+    { id: 7, name: 'RC colla 05', desc: '0.5л · натуральный', price: 100, type: 'cafe', category: 'drinks', img: "арс.webp", emoji: '🥤' },
+    { id: 7.5, name: 'RC colla 05', desc: '0.5л · натуральный', price: 100, type: 'cafe', category: 'drinks', img: "арсс.jpg", emoji: '🥤' },
+    { id: 8, name: 'Гранатовый сок', desc: '0.5л · свежий', price: 290, type: 'cafe', category: 'drinks', img: "https://placehold.co/400x400?text=Гранатовый+сок", emoji: '🧃' },
+    { id: 12, name: 'Рис Девзира', desc: '900г · для плова', price: 320, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Рис+Девзира", emoji: '🍚' },
+    { id: 13, name: 'Масло сливочное', desc: '82.5% · 180г', price: 240, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Масло+сливочное", emoji: '🧈' },
+    { id: 14, name: 'Молоко 3.2%', desc: '1л', price: 110, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Молоко+3.2%25", emoji: '🥛' },
+    { id: 18, name: 'Помидоры', desc: '1кг · грунтовые', price: 220, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Помидоры", emoji: '🍅' },
+    { id: 19, name: 'Огурцы', desc: '1кг · свежие', price: 190, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Огурцы", emoji: '🥒' },
+    
+    // --- НОВЫЕ БЛЮДА / КАФЕ (картинки-заглушки) ---
+    { id: 20, name: 'Шурпа из баранины', desc: 'порция', price: 450, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Шурпа+из+баранины", emoji: '🍲' },
+    { id: 21, name: 'Мастава', desc: 'порция', price: 450, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Мастава", emoji: '🥣' },
+    { id: 22, name: 'Манты с бульоном', desc: '5 шт', price: 450, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Манты+с+бульоном", emoji: '🥟' },
+    { id: 23, name: 'Суп Лагман', desc: 'порция', price: 450, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Суп+Лагман", emoji: '🍜' },
+    { id: 24, name: 'Плов из говядины', desc: '450г', price: 500, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Плов+из+говядины", emoji: '🍛' },
+    { id: 25, name: 'Лагман жареный', desc: 'порция', price: 450, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Лагман+жареный", emoji: '🍝' },
+    { id: 26, name: 'Манты жареные', desc: '5 шт', price: 450, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Манты+жареные", emoji: '🍘' },
+    { id: 27, name: 'Жиз баранина с костями', desc: 'порция', price: 800, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Жиз+баранина+с+костями", emoji: '🍖' },
+    { id: 28, name: 'Курутоб', desc: 'порция', price: 400, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Курутоб", emoji: '🥗' },
+    { id: 29, name: 'Картошка фри', desc: '200г', price: 350, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Картошка+фри", emoji: '🍟' },
+    { id: 30, name: 'Казан кебаб', desc: 'порция', price: 650, type: 'cafe', category: 'shashlik', img: "https://placehold.co/400x400?text=Казан+кебаб", emoji: '🍲' },
+    { id: 31, name: 'Шашлык из говядины', desc: '200г', price: 750, type: 'cafe', category: 'shashlik', img: "https://placehold.co/400x400?text=Шашлык+из+говядины", emoji: '🥩' },
+    { id: 32, name: 'Шашлык из баранины', desc: '200г', price: 800, type: 'cafe', category: 'shashlik', img: "https://placehold.co/400x400?text=Шашлык+из+баранины", emoji: '🍖' },
+    { id: 33, name: 'Куриное филе', desc: '200г', price: 350, type: 'cafe', category: 'shashlik', img: "https://placehold.co/400x400?text=Куриное+филе", emoji: '🍗' },
+    { id: 34, name: 'Крылышки', desc: '6 шт', price: 350, type: 'cafe', category: 'shashlik', img: "https://placehold.co/400x400?text=Крылышки", emoji: '🍗' },
+    { id: 35, name: 'Нарезка', desc: 'мясная', price: 250, type: 'cafe', category: 'shashlik', img: "https://placehold.co/400x400?text=Нарезка", emoji: '🍖' },
+    { id: 36, name: 'Салат Оливье', desc: '200г', price: 400, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Салат+Оливье", emoji: '🥗' },
+    { id: 37, name: 'Шакароб', desc: 'порция', price: 100, type: 'cafe', category: 'dish', img: "https://placehold.co/400x400?text=Шакароб", emoji: '🥗' },
+    { id: 38, name: 'Самса с говядиной', desc: '1 шт', price: 150, type: 'cafe', category: 'bakery', img: "https://placehold.co/400x400?text=Самса+с+говядиной", emoji: '🥟' },
+    { id: 39, name: 'Самса с бараниной', desc: '1 шт', price: 170, type: 'cafe', category: 'bakery', img: "https://placehold.co/400x400?text=Самса+с+бараниной", emoji: '🥟' },
+    { id: 40, name: 'Фатир', desc: '1 шт', price: 200, type: 'cafe', category: 'bakery', img: "https://placehold.co/400x400?text=Фатир", emoji: '🥖' },
+    { id: 41, name: 'Нон', desc: '1 шт', price: 50, type: 'cafe', category: 'bakery', img: "https://placehold.co/400x400?text=Нон", emoji: '🥯' },
+    { id: 42, name: 'Чай зеленый', desc: 'чайник', price: 50, type: 'cafe', category: 'drinks', img: "https://placehold.co/400x400?text=Чай+зеленый", emoji: '🍵' },
+    { id: 43, name: 'Чай черный', desc: 'чайник', price: 50, type: 'cafe', category: 'drinks', img: "https://placehold.co/400x400?text=Чай+черный", emoji: '🍵' },
+    { id: 44, name: 'Чай с лимоном', desc: 'чайник', price: 100, type: 'cafe', category: 'drinks', img: "https://placehold.co/400x400?text=Чай+с+лимоном", emoji: '🍋' },
+    { id: 45, name: 'Чай с чабрецом', desc: 'чайник', price: 100, type: 'cafe', category: 'drinks', img: "https://placehold.co/400x400?text=Чай+с+чабрецом", emoji: '🌿' },
+    { id: 46, name: 'Компот', desc: '0.3л', price: 100, type: 'cafe', category: 'drinks', img: "https://placehold.co/400x400?text=Компот", emoji: '🥤' },
+    
+    // Комбо-сеты
+    { id: 47, name: 'Шурпа из говядины + Нон + Чай', desc: 'комбо', price: 400, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Шурпа+комбо", emoji: '🍱' },
+    { id: 48, name: 'Шурпа из баранины + Нон + Чай', desc: 'комбо', price: 450, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Шурпа+баранина+комбо", emoji: '🍱' },
+    { id: 49, name: 'Мастава + Нон + Чай', desc: 'комбо', price: 450, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Мастава+комбо", emoji: '🍱' },
+    { id: 50, name: 'Суп Лагман + Нон + Чай', desc: 'комбо', price: 450, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Лагман+комбо", emoji: '🍱' },
+    { id: 51, name: 'Манты с бульоном + Нон + Чай', desc: 'комбо', price: 450, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Манты+комбо", emoji: '🍱' },
+    { id: 52, name: 'Плов из говядины + Нон + Чай + Салат', desc: 'комбо', price: 500, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Плов+комбо", emoji: '🍱' },
+    { id: 53, name: 'Манты + Нон + Чай', desc: 'комбо', price: 400, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Манты+классика+комбо", emoji: '🍱' },
+    { id: 54, name: 'Манты жареные + Нон + Чай', desc: 'комбо', price: 450, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Манты+жареные+комбо", emoji: '🍱' },
+    { id: 55, name: 'Лагман жареный + Нон + Чай', desc: 'комбо', price: 450, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Лагман+жареный+комбо", emoji: '🍱' },
+    { id: 56, name: 'Жиз из баранины + Нон + Чай', desc: 'комбо', price: 800, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Жиз+баранина+комбо", emoji: '🍱' },
+    { id: 57, name: 'Казан кебаб + Нон + Чай', desc: 'комбо', price: 650, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Казан+кебаб+комбо", emoji: '🍱' },
+    { id: 58, name: 'Картофель Фри + Нон + Чай', desc: 'комбо', price: 350, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Картошка+фри+комбо", emoji: '🍱' },
+    { id: 59, name: 'Шашлык из говядины + Нон + Чай', desc: 'комбо', price: 750, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Шашлык+говядина+комбо", emoji: '🍱' },
+    { id: 60, name: 'Шашлык из баранины + Нон + Чай', desc: 'комбо', price: 800, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Шашлык+баранина+комбо", emoji: '🍱' },
+    { id: 61, name: 'Люля Кебаб + Нон + Чай + Салат', desc: 'комбо', price: 450, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Люля+кебаб+комбо", emoji: '🍱' },
+    { id: 62, name: 'Куриное филе + Нон + Чай', desc: 'комбо', price: 400, type: 'cafe', category: 'set', img: "https://placehold.co/400x400?text=Куриное+филе+комбо", emoji: '🍱' },
+    
+    // Соусы
+    { id: 63, name: 'Аджика (острая)', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: "https://placehold.co/400x400?text=Аджика+острая", emoji: '🌶️' },
+    { id: 64, name: 'Сметанно-чесночный', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: "https://placehold.co/400x400?text=Сметанно-чесночный", emoji: '🧄' },
+    { id: 65, name: 'Томатный к шашлыку', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: "https://placehold.co/400x400?text=Томатный+соус", emoji: '🍅' },
+    { id: 66, name: 'Уксус с луком', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: "https://placehold.co/400x400?text=Уксус+с+луком", emoji: '🧅' },
+
+    // ========== НОВЫЕ ПРОДУКТЫ (бакалея, молочка, овощи, фрукты, мясо, хозтовары) ==========
+    { id: 67, name: 'Мука высший сорт', desc: '2 кг', price: 140, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Мука+высший+сорт", emoji: '🌾' },
+    { id: 68, name: 'Масло подсолнечное', desc: '1 л', price: 120, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Масло+подсолнечное", emoji: '🫒' },
+    { id: 69, name: 'Масло оливковое', desc: '0.5 л', price: 450, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Масло+оливковое", emoji: '🫒' },
+    { id: 70, name: 'Рис (для плова)', desc: '1 кг', price: 150, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Рис+для+плова", emoji: '🍚' },
+    { id: 71, name: 'Гречка', desc: '1 кг', price: 90, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Гречка", emoji: '🌾' },
+    { id: 72, name: 'Макароны', desc: '450 г', price: 75, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Макароны", emoji: '🍝' },
+    { id: 73, name: 'Сахар', desc: '1 кг', price: 70, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Сахар", emoji: '🍬' },
+    { id: 74, name: 'Соль поваренная', desc: 'пачка', price: 25, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Соль", emoji: '🧂' },
+    { id: 75, name: 'Дрожжи сухие', desc: 'упаковка', price: 30, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Дрожжи+сухие", emoji: '🥖' },
+    { id: 76, name: 'Чай черный', desc: 'пачка', price: 180, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Чай+черный+пачка", emoji: '🍵' },
+    
+    { id: 77, name: 'Молоко', desc: '1 л', price: 85, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Молоко+1л", emoji: '🥛' },
+    { id: 78, name: 'Кефир', desc: '1 л', price: 80, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Кефир", emoji: '🥛' },
+    { id: 79, name: 'Сметана', desc: '20%, 200г', price: 95, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Сметана", emoji: '🥄' },
+    { id: 80, name: 'Масло сливочное', desc: '82.5%, 180г', price: 180, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Масло+сливочное+82%25", emoji: '🧈' },
+    { id: 81, name: 'Творог', desc: 'пачка', price: 110, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Творог", emoji: '🥛' },
+    { id: 82, name: 'Сыр твердый', desc: '200 г', price: 220, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Сыр+твердый", emoji: '🧀' },
+    { id: 83, name: 'Яйца', desc: 'десяток', price: 110, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Яйца+10+шт", emoji: '🥚' },
+    
+    { id: 84, name: 'Картофель', desc: '1 кг', price: 45, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Картофель", emoji: '🥔' },
+    { id: 85, name: 'Лук репчатый', desc: '1 кг', price: 40, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Лук+репчатый", emoji: '🧅' },
+    { id: 86, name: 'Морковь', desc: '1 кг', price: 45, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Морковь", emoji: '🥕' },
+    { id: 87, name: 'Томаты', desc: '1 кг', price: 180, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Томаты", emoji: '🍅' },
+    { id: 88, name: 'Огурцы', desc: '1 кг', price: 150, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Огурцы+1кг", emoji: '🥒' },
+    { id: 89, name: 'Капуста', desc: '1 кг', price: 50, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Капуста", emoji: '🥬' },
+    { id: 90, name: 'Чеснок', desc: '1 шт', price: 25, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Чеснок", emoji: '🧄' },
+    { id: 91, name: 'Зелень', desc: 'пучок', price: 40, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Зелень", emoji: '🌿' },
+    
+    { id: 92, name: 'Яблоки', desc: '1 кг', price: 120, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Яблоки", emoji: '🍎' },
+    { id: 93, name: 'Бананы', desc: '1 кг', price: 140, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Бананы", emoji: '🍌' },
+    { id: 94, name: 'Лимоны', desc: '1 шт', price: 40, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Лимоны", emoji: '🍋' },
+    { id: 95, name: 'Апельсины', desc: '1 кг', price: 160, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Апельсины", emoji: '🍊' },
+    { id: 96, name: 'Виноград', desc: '1 кг', price: 250, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Виноград", emoji: '🍇' },
+    
+    { id: 97, name: 'Говядина (мякоть)', desc: '1 кг', price: 650, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Говядина+мякоть", emoji: '🥩' },
+    { id: 98, name: 'Баранина (корейка)', desc: '1 кг', price: 750, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Баранина+корейка", emoji: '🍖' },
+    { id: 99, name: 'Курица (тушка)', desc: '1 шт', price: 280, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Курица+тушка", emoji: '🍗' },
+    { id: 100, name: 'Фарш домашний', desc: '1 кг', price: 450, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Фарш+домашний", emoji: '🍔' },
+    { id: 101, name: 'Колбаса докторская', desc: 'палка', price: 350, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Колбаса+докторская", emoji: '🌭' },
+    { id: 102, name: 'Сосиски', desc: 'пачка', price: 280, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Сосиски", emoji: '🌭' },
+    
+    { id: 103, name: 'Вода газированная', desc: '1.5 л', price: 55, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Вода+газированная", emoji: '💧' },
+    { id: 104, name: 'Вода без газа', desc: '5 л', price: 110, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Вода+без+газа", emoji: '💧' },
+    { id: 105, name: 'Сок в ассортименте', desc: '1 л', price: 130, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Сок", emoji: '🧃' },
+    { id: 106, name: 'Кока-кола', desc: '0.5 л', price: 85, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Кока-кола", emoji: '🥤' },
+    
+    { id: 107, name: 'Спички', desc: 'упаковка', price: 30, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Спички", emoji: '🔥' },
+    { id: 108, name: 'Салфетки бумажные', desc: 'пачка', price: 45, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Салфетки", emoji: '🧻' },
+    { id: 109, name: 'Мыло', desc: '1 шт', price: 60, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Мыло", emoji: '🧼' },
+    { id: 110, name: 'Хлеб (белый/черный)', desc: '1 шт', price: 40, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Хлеб", emoji: '🍞' },
+    { id: 111, name: 'Печенье к чаю', desc: 'пачка', price: 110, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Печенье", emoji: '🍪' },
+    { id: 112, name: 'Пряники', desc: 'упаковка', price: 120, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Пряники", emoji: '🍪' },
+    { id: 113, name: 'Конфеты (на развес)', desc: '1 кг', price: 450, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Конфеты", emoji: '🍬' },
+    { id: 114, name: 'Шоколад', desc: 'плитка', price: 90, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Шоколад", emoji: '🍫' },
+    { id: 115, name: 'Кофе растворимый', desc: 'банка', price: 320, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Кофе", emoji: '☕' },
+    { id: 116, name: 'Приправа для плова', desc: 'пакет', price: 40, type: 'market', category: 'grocery', img: "https://placehold.co/400x400?text=Приправа+для+плова", emoji: '🧂' }
 ];
 
 const categories = [
@@ -1401,9 +1513,9 @@ const categories = [
     { id: 'bakery', name: 'Выпечка', emoji: '🥐' },
     { id: 'drinks', name: 'Напитки', emoji: '🥤' },
     { id: 'sauces', name: 'Соусы', emoji: '🍶' },
-    { id: 'grocery', name: 'Продукты', emoji: '🛒' }
+    { id: 'grocery', name: 'Продукты', emoji: '🛒' },
+    { id: 'set', name: 'Комбо', emoji: '🍱' }
 ];
-
 const ADMIN_PIN = '1234';
 const OWNER_PHONE = '79385401876';
 
@@ -2014,6 +2126,7 @@ function setCategory(catId) {
 }
 
 function renderProducts() {
+    // 1. Фильтрация по режиму, категории и поиску
     let filtered = products.filter(p => {
         if (activeMode === 'cafe' && p.type !== 'cafe') return false;
         if (activeMode === 'market' && p.type !== 'market') return false;
@@ -2021,12 +2134,75 @@ function renderProducts() {
         if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;
     });
+
+    // Если поиск или выбрана конкретная категория – выводим как есть (без чередования)
+    const needMixed = (activeMode === 'all' && activeCategory === 'all' && searchQuery === '');
+
+    let finalProducts = [];
+
+    if (needMixed) {
+        // Разделяем на две группы: кафе и магазин
+        let cafeItems = filtered.filter(p => p.type === 'cafe');
+        let marketItems = filtered.filter(p => p.type === 'market');
+
+        // Сортируем кафе: сначала блюда (dish), потом шашлык, выпечка, напитки, соусы, комбо
+        const cafeOrder = { dish: 1, shashlik: 2, bakery: 3, drinks: 4, sauces: 5, set: 6 };
+        cafeItems.sort((a, b) => {
+            const orderA = cafeOrder[a.category] || 99;
+            const orderB = cafeOrder[b.category] || 99;
+            if (orderA !== orderB) return orderA - orderB;
+            return a.id - b.id;
+        });
+
+        // Сортируем магазин просто по id
+        marketItems.sort((a, b) => a.id - b.id);
+
+        // Чередование: сначала 4 кафе, потом по 2 магазина / 2 кафе
+        let result = [];
+        // Берём первые 4 кафе
+        let cafeIndex = 0;
+        let marketIndex = 0;
+        // Первые 4 кафе
+        for (let i = 0; i < 4 && cafeIndex < cafeItems.length; i++) {
+            result.push(cafeItems[cafeIndex++]);
+        }
+        // Затем чередуем: 2 магазина, 2 кафе, пока есть товары
+        while (cafeIndex < cafeItems.length || marketIndex < marketItems.length) {
+            // Добавляем 2 из магазина
+            for (let i = 0; i < 2 && marketIndex < marketItems.length; i++) {
+                result.push(marketItems[marketIndex++]);
+            }
+            // Добавляем 2 из кафе
+            for (let i = 0; i < 2 && cafeIndex < cafeItems.length; i++) {
+                result.push(cafeItems[cafeIndex++]);
+            }
+        }
+        finalProducts = result;
+    } else {
+        // Обычная сортировка (например, при режиме только кафе или только магазин)
+        // Сортируем так же, как раньше
+        filtered.sort((a, b) => {
+            if (a.type === 'cafe' && b.type === 'market') return -1;
+            if (a.type === 'market' && b.type === 'cafe') return 1;
+            if (a.type === 'cafe' && b.type === 'cafe') {
+                const order = { dish: 1, shashlik: 2, bakery: 3, drinks: 4, sauces: 5, set: 6 };
+                const orderA = order[a.category] || 99;
+                const orderB = order[b.category] || 99;
+                if (orderA !== orderB) return orderA - orderB;
+                return a.id - b.id;
+            }
+            return a.id - b.id;
+        });
+        finalProducts = filtered;
+    }
+
     const grid = document.getElementById('productsGrid');
-    if (filtered.length === 0) {
+    if (finalProducts.length === 0) {
         grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted);">🍽️ Ничего не найдено</div>`;
         return;
     }
-    grid.innerHTML = filtered.map(p => {
+
+    grid.innerHTML = finalProducts.map(p => {
         const isFavorite = favorites.includes(p.id);
         const adminControls = isAdminAuthenticated ? `
             <div class="admin-controls">
