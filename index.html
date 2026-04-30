@@ -1379,12 +1379,12 @@
 // ========== ДАННЫЕ (локальные файлы) ==========
 let products = JSON.parse(localStorage.getItem('products')) || [
     // --- СТАРЫЕ ТОВАРЫ (кафе и магазин) ---
-    { id: 1, name: 'Шурпа из говядины', desc: '400г', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
+    { id: 27, name: 'Шурпа из говядины', desc: '400г', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
     { id: 2, name: 'Люля-кебаб', desc: '1 шт · говядина', price: 200, type: 'cafe', category: 'shashlik', img: "Люля-кебаб.webp", emoji: '🍡' },
     { id: 3, name: 'Манты', desc: '350г · 5 шт', price: 300, type: 'cafe', category: 'dish', img: "манты.jpg", emoji: '🍜' },
     { id: 4, name: 'Плов с говядины', desc: '450г · с нутом', price: 300, type: 'cafe', category: 'dish', img: "333.webp", emoji: '🍚' },
-    { id: 5, name: 'Самса с мясом', desc: '2 шт · тандыр', price: 280, type: 'cafe', category: 'bakery', img: "444.png", emoji: '🥟' },
-    { id: 6, name: 'Хачапури', desc: '300г · яйцо', price: 250, type: 'cafe', category: 'bakery', img: "555.jpg", emoji: '🥐' },
+   
+    
     { id: 7, name: 'RC colla 05', desc: '0.5л · натуральный', price: 100, type: 'cafe', category: 'drinks', img: "арс.webp", emoji: '🥤' },
     { id: 7.5, name: 'RC colla 05', desc: '0.5л · натуральный', price: 100, type: 'cafe', category: 'drinks', img: "арсс.jpg", emoji: '🥤' },
     { id: 8, name: 'Гранатовый сок', desc: '0.5л · свежий', price: 120, type: 'cafe', category: 'drinks', img: 'granat.jpg', emoji: '🧃' },
@@ -1392,31 +1392,31 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     { id: 13, name: 'Масло сливочное', desc: '82.5% · 180г', price: 145, type: 'market', category: 'grocery', img: "масло.jpg", emoji: '🧈' },
     { id: 14, name: 'Молоко 3.2%', desc: '1л', price: 90, type: 'market', category: 'grocery', img: "молоко.webp", emoji: '🥛' },
     { id: 18, name: 'Помидоры', desc: '1кг · грунтовые', price: 125, type: 'market', category: 'grocery', img: "помидор.webp", emoji: '🍅' },
-    { id: 19, name: 'Огурцы', desc: '1кг · свежие', price: 220, type: 'market', category: 'grocery', img: "огур.jpg", emoji: '🥒' },
+    { id: 19, name: 'Огурцы', desc: '1кг · свежие', price: 220, type: 'market', category: 'grocery', img: "огр.jpg", emoji: '🥒' },
     
     // --- НОВЫЕ БЛЮДА / КАФЕ (ранее добавленные) ---
-    { id: 20, name: 'Шурпа из баранины', desc: 'порция', price: 350, type: 'cafe', category: 'dish', img: "1111.jpg", emoji: '🍲' },
-    { id: 21, name: 'Мастава', desc: 'порция', price: 350, type: 'cafe', category: 'dish', img: "мастава.jpg", emoji: '🥣' },
+    { id: 20, name: 'Шурпа из баранины', desc: 'порция', price: 350, type: 'cafe', category: 'dish', img: "shurpa.jpg", emoji: '🍲' },
+    { id: 21, name: 'Мастава', desc: 'порция', price: 350, type: 'cafe', category: 'dish', img: "маст.webp", emoji: '🥣' },
     { id: 22, name: 'Манты с бульоном', desc: '5 шт', price: 350, type: 'cafe', category: 'dish', img: "мантыбул.jpg", emoji: '🥟' },
     { id: 23, name: 'Суп Лагман', desc: 'порция', price: 350, type: 'cafe', category: 'dish', img: "лагман.jpg", emoji: '🍜' },
     
     { id: 25, name: 'Лагман жареный', desc: 'порция', price: 350, type: 'cafe', category: 'dish', img: "lagzar.webp", emoji: '🍝' },
     { id: 26, name: 'Манты жареные', desc: '5 шт', price: 350, type: 'cafe', category: 'dish', img: "mant.jpg", emoji: '🍘' },
-    { id: 27, name: 'Жиз баранина с костями', desc: 'порция', price: 700, type: 'cafe', category: 'dish', img: "jiz.jpg", emoji: '🍖' },
+    { id: 1, name: 'Жиз баранина с костями', desc: 'порция', price: 700, type: 'cafe', category: 'dish', img: "jiz.jpg", emoji: '🍖' },
     { id: 28, name: 'Курутоб', desc: 'порция', price: 1000, type: 'cafe', category: 'dish', img: "kurtob.jpg", emoji: '🥗' },
     { id: 29, name: 'Картошка фри', desc: '200г', price: 250, type: 'cafe', category: 'dish', img: "fri.webp", emoji: '🍟' },
     { id: 30, name: 'Казан кебаб', desc: 'порция', price: 550, type: 'cafe', category: 'shashlik', img: 'казан.jpg', emoji: '🍲' },
     { id: 31, name: 'Шашлык из говядины', desc: '200г', price: 350, type: 'cafe', category: 'shashlik', img: 'shash.jpg', emoji: '🥩' },
     { id: 32, name: 'Шашлык из баранины', desc: '200г', price: 400, type: 'cafe', category: 'shashlik', img: 'шашл.jpg', emoji: '🍖' },
-    { id: 33, name: 'Куриное филе', desc: '200г', price: 350, type: 'cafe', category: 'shashlik', img: '', emoji: '🍗' },
-    { id: 34, name: 'Крылышки', desc: '6 шт', price: 350, type: 'cafe', category: 'shashlik', img: '', emoji: '🍗' },
-    { id: 35, name: 'Нарезка', desc: 'мясная', price: 250, type: 'cafe', category: 'shashlik', img: '', emoji: '🍖' },
+    { id: 33, name: 'Куриное филе', desc: '200г', price: 350, type: 'cafe', category: 'shashlik', img: 'curl.jpg', emoji: '🍗' },
+    { id: 34, name: 'Крылышки', desc: '6 шт', price: 350, type: 'cafe', category: 'shashlik', img: 'cril.jpg', emoji: '🍗' },
+    { id: 35, name: 'Нарезка', desc: 'мясная', price: 250, type: 'cafe', category: 'shashlik', img: 'narez.png', emoji: '🍖' },
     { id: 36, name: 'Салат Оливье', desc: '200г', price: 150, type: 'cafe', category: 'dish', img: 'salat.webp', emoji: '🥗' },
     { id: 37, name: 'Шакароб', desc: 'порция', price: 100, type: 'cafe', category: 'dish', img: 'шакароб.jpg', emoji: '🥗' },
-    { id: 38, name: 'Самса с говядиной', desc: '1 шт', price: 150, type: 'cafe', category: 'bakery', img: '', emoji: '🥟' },
-    { id: 39, name: 'Самса с бараниной', desc: '1 шт', price: 170, type: 'cafe', category: 'bakery', img: '', emoji: '🥟' },
-    { id: 40, name: 'Фатир', desc: '1 шт', price: 200, type: 'cafe', category: 'bakery', img: '', emoji: '🥖' },
-    { id: 41, name: 'Нон', desc: '1 шт', price: 50, type: 'cafe', category: 'bakery', img: '', emoji: '🥯' },
+    { id: 38, name: 'Самса с говядиной', desc: '1 шт', price: 150, type: 'cafe', category: 'bakery', img: '444.png', emoji: '🥟' },
+    { id: 39, name: 'Самса с бараниной', desc: '1 шт', price: 170, type: 'cafe', category: 'bakery', img: 'sambar.webp', emoji: '🥟' },
+    { id: 40, name: 'Фатир', desc: '1 шт', price: 200, type: 'cafe', category: 'bakery', img: 'fatir.webp', emoji: '🥖' },
+    { id: 41, name: 'Нон', desc: '1 шт', price: 50, type: 'cafe', category: 'bakery', img: 'нон.jpg', emoji: '🥯' },
     { id: 43, name: 'Чай зеленый', desc: 'чайник', price: 50, type: 'cafe', category: 'drinks', img: "чайзелен.jpg", emoji: '🍵' },
     { id: 42, name: 'Чай черный', desc: 'чайник', price: 50, type: 'cafe', category: 'drinks', img: "чайчерн.jpg", emoji: '🍵' },
     { id: 44, name: 'Чай с лимоном', desc: 'чайник', price: 100, type: 'cafe', category: 'drinks', img: "jaylimon.jpg", emoji: '🍋' },
@@ -1439,13 +1439,13 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     { id: 59, name: 'Шашлык из говядины + Нон + Чай', desc: 'комбо', price: 750, type: 'cafe', category: 'set', img: '', emoji: '🍱' },
     { id: 60, name: 'Шашлык из баранины + Нон + Чай', desc: 'комбо', price: 800, type: 'cafe', category: 'set', img: '', emoji: '🍱' },
     { id: 61, name: 'Люля Кебаб + Нон + Чай + Салат', desc: 'комбо', price: 450, type: 'cafe', category: 'set', img: '', emoji: '🍱' },
-    { id: 62, name: 'Куриное филе + Нон + Чай', desc: 'комбо', price: 400, type: 'cafe', category: 'set', img: '', emoji: '🍱' },
+    { id: 62, name: 'Куриное филе + Нон + Чай', desc: 'комбо', price: 250, type: 'cafe', category: 'set', img: '', emoji: '🍱' },
     
     // Соусы
-    { id: 63, name: 'Аджика (острая)', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: '', emoji: '🌶️' },
-    { id: 64, name: 'Сметанно-чесночный', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: '', emoji: '🧄' },
-    { id: 65, name: 'Томатный к шашлыку', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: '', emoji: '🍅' },
-    { id: 66, name: 'Уксус с луком', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: '', emoji: '🧅' },
+    { id: 63, name: 'Аджика (острая)', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: 'аджика.jpg', emoji: '🌶️' },
+    { id: 64, name: 'Сметанно-чесночный', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: 'smetan.jpg', emoji: '🧄' },
+    { id: 65, name: 'Томатный к шашлыку', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: 'томать.jpg', emoji: '🍅' },
+    { id: 66, name: 'Уксус с луком', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: 'уксус.jpg', emoji: '🧅' },
 
     // ========== НОВЫЕ ПРОДУКТЫ (market / grocery) ==========
     // Бакалея
@@ -1458,59 +1458,59 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     { id: 73, name: 'Сахар', desc: '1 кг', price: 70, type: 'market', category: 'grocery', img: 'сахар.jpeg', emoji: '🍬' },
     { id: 74, name: 'Соль поваренная', desc: 'пачка', price: 25, type: 'market', category: 'grocery', img: 'соль.jpg', emoji: '🧂' },
     { id: 75, name: 'Дрожжи сухие', desc: 'упаковка', price: 30, type: 'market', category: 'grocery', img: 'дрож.jpeg', emoji: '🥖' },
-    { id: 76, name: 'Чай черный', desc: 'пачка', price: 180, type: 'market', category: 'grocery', img: " ", emoji: '🍵' },
+    { id: 76, name: 'Чай черный', desc: 'пачка', price: 180, type: 'market', category: 'grocery', img: "чайчерный.webp", emoji: '🍵' },
     
     // Молочные продукты и яйца
-    { id: 77, name: 'Молоко', desc: '1 л', price: 85, type: 'market', category: 'grocery', img: '', emoji: '🥛' },
-    { id: 78, name: 'Кефир', desc: '1 л', price: 80, type: 'market', category: 'grocery', img: '', emoji: '🥛' },
-    { id: 79, name: 'Сметана', desc: '20%, 200г', price: 95, type: 'market', category: 'grocery', img: '', emoji: '🥄' },
-    { id: 80, name: 'Масло сливочное', desc: '82.5%, 180г', price: 180, type: 'market', category: 'grocery', img: '', emoji: '🧈' },
-    { id: 81, name: 'Творог', desc: 'пачка', price: 110, type: 'market', category: 'grocery', img: '', emoji: '🥛' },
-    { id: 82, name: 'Сыр твердый', desc: '200 г', price: 220, type: 'market', category: 'grocery', img: '', emoji: '🧀' },
-    { id: 83, name: 'Яйца', desc: 'десяток', price: 110, type: 'market', category: 'grocery', img: '', emoji: '🥚' },
+    { id: 77, name: 'Молоко', desc: '1 л', price: 85, type: 'market', category: 'grocery', img: 'milk.webp', emoji: '🥛' },
+    { id: 78, name: 'Кефир', desc: '1 л', price: 80, type: 'market', category: 'grocery', img: 'кефир.webp', emoji: '🥛' },
+    { id: 79, name: 'Сметана', desc: '20%, 200г', price: 95, type: 'market', category: 'grocery', img: 'сметан.jpg', emoji: '🥄' },
+    { id: 80, name: 'Масло сливочное', desc: '72.5%, 180г', price: 180, type: 'market', category: 'grocery', img: 'маслооо.webp', emoji: '🧈' },
+    { id: 81, name: 'Творог', desc: 'пачка', price: 110, type: 'market', category: 'grocery', img: 'творог.webp', emoji: '🥛' },
+    { id: 82, name: 'Сыр твердый', desc: '200 г', price: 220, type: 'market', category: 'grocery', img: 'сыр.webp', emoji: '🧀' },
+    { id: 83, name: 'Яйца', desc: 'десяток', price: 110, type: 'market', category: 'grocery', img: 'egg.png', emoji: '🥚' },
     
     // Овощи
-    { id: 84, name: 'Картофель', desc: '1 кг', price: 45, type: 'market', category: 'grocery', img: '', emoji: '🥔' },
-    { id: 85, name: 'Лук репчатый', desc: '1 кг', price: 40, type: 'market', category: 'grocery', img: '', emoji: '🧅' },
-    { id: 86, name: 'Морковь', desc: '1 кг', price: 45, type: 'market', category: 'grocery', img: '', emoji: '🥕' },
-    { id: 87, name: 'Томаты', desc: '1 кг', price: 180, type: 'market', category: 'grocery', img: '', emoji: '🍅' },
-    { id: 88, name: 'Огурцы', desc: '1 кг', price: 150, type: 'market', category: 'grocery', img: '', emoji: '🥒' },
-    { id: 89, name: 'Капуста', desc: '1 кг', price: 50, type: 'market', category: 'grocery', img: '', emoji: '🥬' },
-    { id: 90, name: 'Чеснок', desc: '1 шт', price: 25, type: 'market', category: 'grocery', img: '', emoji: '🧄' },
-    { id: 91, name: 'Зелень', desc: 'пучок', price: 40, type: 'market', category: 'grocery', img: '', emoji: '🌿' },
+    { id: 84, name: 'Картофель', desc: '1 кг', price: 45, type: 'market', category: 'grocery', img: 'kort.webp', emoji: '🥔' },
+    { id: 85, name: 'Лук репчатый', desc: '1 кг', price: 40, type: 'market', category: 'grocery', img: 'luk.jpg', emoji: '🧅' },
+    { id: 86, name: 'Морковь', desc: '1 кг', price: 45, type: 'market', category: 'grocery', img: 'морков.jpg', emoji: '🥕' },
+    { id: 87, name: 'Томаты', desc: '1 кг', price: 180, type: 'market', category: 'grocery', img: 'томат.jpg', emoji: '🍅' },
+    { id: 88, name: 'Огурцы', desc: '1 кг', price: 150, type: 'market', category: 'grocery', img: 'огурц.webp', emoji: '🥒' },
+    { id: 89, name: 'Капуста', desc: '1 кг', price: 50, type: 'market', category: 'grocery', img: 'капуст.webp', emoji: '🥬' },
+    { id: 90, name: 'Чеснок', desc: '1 шт', price: 25, type: 'market', category: 'grocery', img: 'честнок.webp', emoji: '🧄' },
+    { id: 91, name: 'Зелень', desc: 'пучок', price: 40, type: 'market', category: 'grocery', img: 'зелен.webp', emoji: '🌿' },
     
     // Фрукты
-    { id: 92, name: 'Яблоки', desc: '1 кг', price: 120, type: 'market', category: 'grocery', img: '', emoji: '🍎' },
-    { id: 93, name: 'Бананы', desc: '1 кг', price: 140, type: 'market', category: 'grocery', img: '', emoji: '🍌' },
-    { id: 94, name: 'Лимоны', desc: '1 шт', price: 40, type: 'market', category: 'grocery', img: '', emoji: '🍋' },
-    { id: 95, name: 'Апельсины', desc: '1 кг', price: 160, type: 'market', category: 'grocery', img: '', emoji: '🍊' },
-    { id: 96, name: 'Виноград', desc: '1 кг', price: 250, type: 'market', category: 'grocery', img: '', emoji: '🍇' },
+    { id: 92, name: 'Яблоки', desc: '1 кг', price: 120, type: 'market', category: 'grocery', img: 'appl.jpg', emoji: '🍎' },
+    { id: 93, name: 'Бананы', desc: '1 кг', price: 140, type: 'market', category: 'grocery', img: 'banan.jpg', emoji: '🍌' },
+    { id: 94, name: 'Лимоны', desc: '1 шт', price: 40, type: 'market', category: 'grocery', img: 'limon.webp', emoji: '🍋' },
+    { id: 95, name: 'Апельсины', desc: '1 кг', price: 160, type: 'market', category: 'grocery', img: 'apl.webp', emoji: '🍊' },
+    { id: 96, name: 'Виноград', desc: '1 кг', price: 250, type: 'market', category: 'grocery', img: 'vin.avif', emoji: '🍇' },
     
     // Мясо и колбасы
-    { id: 97, name: 'Говядина (мякоть)', desc: '1 кг', price: 650, type: 'market', category: 'grocery', img: '', emoji: '🥩' },
-    { id: 98, name: 'Баранина (корейка)', desc: '1 кг', price: 750, type: 'market', category: 'grocery', img: '', emoji: '🍖' },
-    { id: 99, name: 'Курица (тушка)', desc: '1 шт', price: 280, type: 'market', category: 'grocery', img: '', emoji: '🍗' },
-    { id: 100, name: 'Фарш домашний', desc: '1 кг', price: 450, type: 'market', category: 'grocery', img: '', emoji: '🍔' },
-    { id: 101, name: 'Колбаса докторская', desc: 'палка', price: 350, type: 'market', category: 'grocery', img: '', emoji: '🌭' },
-    { id: 102, name: 'Сосиски', desc: 'пачка', price: 280, type: 'market', category: 'grocery', img: '', emoji: '🌭' },
+    { id: 97, name: 'Говядина (мякоть)', desc: '1 кг', price: 650, type: 'market', category: 'grocery', img: 'orig.webp', emoji: '🥩' },
+    { id: 98, name: 'Баранина (корейка)', desc: '1 кг', price: 750, type: 'market', category: 'grocery', img: 'bar.webp', emoji: '🍖' },
+    { id: 99, name: 'Курица (тушка)', desc: '1 шт', price: 280, type: 'market', category: 'grocery', img: 'tush.webp', emoji: '🍗' },
+    { id: 100, name: 'Фарш домашний', desc: '1 кг', price: 450, type: 'market', category: 'grocery', img: 'тушкдом.webp', emoji: '🍔' },
+    { id: 101, name: 'Колбаса докторская', desc: 'палка', price: 350, type: 'market', category: 'grocery', img: 'колб.webp', emoji: '🌭' },
+    { id: 102, name: 'Сосиски', desc: 'пачка', price: 280, type: 'market', category: 'grocery', img: 'сосиски.jpg', emoji: '🌭' },
     
     // Напитки и вода
-    { id: 103, name: 'Вода газированная', desc: '1.5 л', price: 55, type: 'market', category: 'grocery', img: '', emoji: '💧' },
-    { id: 104, name: 'Вода без газа', desc: '5 л', price: 110, type: 'market', category: 'grocery', img: '', emoji: '💧' },
-    { id: 105, name: 'Сок в ассортименте', desc: '1 л', price: 130, type: 'market', category: 'grocery', img: '', emoji: '🧃' },
-    { id: 106, name: 'Кока-кола', desc: '0.5 л', price: 85, type: 'market', category: 'grocery', img: '', emoji: '🥤' },
+    { id: 103, name: 'Вода газированная', desc: '1.5 л', price: 55, type: 'market', category: 'grocery', img: 'vodneg.webp', emoji: '💧' },
+    { id: 104, name: 'Вода без газа', desc: '5 л', price: 110, type: 'market', category: 'grocery', img: 'voda5.webp', emoji: '💧' },
+    { id: 105, name: 'Сок в ассортименте', desc: '1 л', price: 130, type: 'market', category: 'grocery', img: 'soc.webp', emoji: '🧃' },
+    { id: 106, name: 'Кока-кола', desc: '0.5 л', price: 85, type: 'market', category: 'grocery', img: 'kok.webp', emoji: '🥤' },
     
     // Хозтовары и мелочи
-    { id: 107, name: 'Спички', desc: 'упаковка', price: 30, type: 'market', category: 'grocery', img: '', emoji: '🔥' },
-    { id: 108, name: 'Салфетки бумажные', desc: 'пачка', price: 45, type: 'market', category: 'grocery', img: '', emoji: '🧻' },
-    { id: 109, name: 'Мыло', desc: '1 шт', price: 60, type: 'market', category: 'grocery', img: '', emoji: '🧼' },
-    { id: 110, name: 'Хлеб (белый/черный)', desc: '1 шт', price: 40, type: 'market', category: 'grocery', img: '', emoji: '🍞' },
-    { id: 111, name: 'Печенье к чаю', desc: 'пачка', price: 110, type: 'market', category: 'grocery', img: '', emoji: '🍪' },
-    { id: 112, name: 'Пряники', desc: 'упаковка', price: 120, type: 'market', category: 'grocery', img: '', emoji: '🍪' },
-    { id: 113, name: 'Конфеты (на развес)', desc: '1 кг', price: 450, type: 'market', category: 'grocery', img: '', emoji: '🍬' },
-    { id: 114, name: 'Шоколад', desc: 'плитка', price: 90, type: 'market', category: 'grocery', img: '', emoji: '🍫' },
-    { id: 115, name: 'Кофе растворимый', desc: 'банка', price: 320, type: 'market', category: 'grocery', img: '', emoji: '☕' },
-    { id: 116, name: 'Приправа для плова', desc: 'пакет', price: 40, type: 'market', category: 'grocery', img: '', emoji: '🧂' }
+    { id: 107, name: 'Спички', desc: 'упаковка', price: 30, type: 'market', category: 'grocery', img: 'спичка.jpg', emoji: '🔥' },
+    { id: 108, name: 'Салфетки бумажные', desc: 'пачка', price: 45, type: 'market', category: 'grocery', img: 'salf.webp', emoji: '🧻' },
+    { id: 109, name: 'Мыло', desc: '1 шт', price: 60, type: 'market', category: 'grocery', img: 'мыло.webp', emoji: '🧼' },
+    
+    { id: 111, name: 'Печенье к чаю', desc: 'пачка', price: 110, type: 'market', category: 'grocery', img: 'pich.webp', emoji: '🍪' },
+    { id: 112, name: 'Пряники', desc: 'упаковка', price: 120, type: 'market', category: 'grocery', img: 'priy.webp', emoji: '🍪' },
+    { id: 113, name: 'Конфеты (на развес)', desc: '1 кг', price: 450, type: 'market', category: 'grocery', img: 'кон.png', emoji: '🍬' },
+    { id: 114, name: 'Шоколад', desc: 'плитка', price: 90, type: 'market', category: 'grocery', img: 'шок.webp', emoji: '🍫' },
+    { id: 115, name: 'Кофе растворимый', desc: 'банка', price: 320, type: 'market', category: 'grocery', img: 'kof.webp', emoji: '☕' },
+    { id: 116, name: 'Приправа для плова', desc: 'пакет', price: 40, type: 'market', category: 'grocery', img: 'prip.webp', emoji: '🧂' }
 ];
 
 const categories = [
