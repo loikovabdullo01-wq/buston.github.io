@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>BUSTON | маркет</title>
-  <!-- Иконка для современных браузеров (PNG) -->
-<link rel="icon" href="13.jpg" type="image/png">
-
-<!-- Иконка для старых браузеров (ICO) -->
-<link rel="shortcut icon" href="13.jpg" type="image/x-icon">
-
-<!-- Иконка для iPhone и iPad (Apple Touch Icon) -->
-<link rel="apple-touch-icon" href="13.jpg">
     <style>
         * {
             margin: 0;
@@ -1215,44 +1207,20 @@
         </div>
 
         <!-- ========== УСПЕШНЫЙ ЗАКАЗ ========== -->
-<div class="page" id="orderSuccessPage">
-    <div class="success-order">
-        <div class="success-emoji">✅</div>
-        <div class="success-title">Заказ успешно сформирован!</div>
-        <div class="success-text" id="successOrderNumber">Заказ #BUSTON-001</div>
-        <div class="success-order-details" id="successOrderDetails"></div>
-        
-        <p style="color: var(--text-secondary); margin: 20px 0; line-height: 1.5;">
-            Выберите мессенджер для подтверждения заказа и получения деталей:
-            <br>
-            <span style="color: var(--accent-red); font-size: 0.9em;">
-                ⚠️ Перед отправкой убедитесь, что у вас включён VPN
+        <div class="page" id="orderSuccessPage">
+            <div class="success-order">
+                <div class="success-emoji">✅</div>
+                <div class="success-title">заказ готов ! жмите "отправить в whatsApp" для подтверждения</div>
+                <div class="success-text" id="successOrderNumber">Заказ #BUSTON-001</div>
+                <div class="success-order-details" id="successOrderDetails"></div>
+                <p style="color: var(--text-secondary); margin: 20px 0;">Мы отправиv детали заказа в WhatsApp</p>
+                  <span style="color: var(--accent-red); font-size: 0.9em;">
+                ⚠️ Перед отправкой убедитесь, что у вас включён VPN ⚠️
             </span>
-        </p>
-
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <!-- Кнопка WhatsApp -->
-            <button class="checkout-btn" onclick="sendToWhatsApp()" style="background-color: #25D366;">
-                📱 Отправить в WhatsApp
-            </button>
-
-            <!-- Кнопка Telegram -->
-            <button class="checkout-btn" onclick="sendToTelegram()" style="background-color: #0088cc;">
-                📱 Отправить в Telegram
-            </button>
-
-            <!-- Кнопка Max -->
-            <button class="checkout-btn" onclick="sendToMax()" style="background-color: var(--accent-blue);">
-                📱 Отправить в Max
-            </button>
+               <br> <button class="checkout-btn" onclick="sendToWhatsApp()">📱 oтправить в whatsApp</button>
+                <button class="admin-btn-secondary" style="margin-top: 12px;" onclick="navigateTo('home')">🏠 На главную</button>
+            </div>
         </div>
-
-        <button class="admin-btn-secondary" style="margin-top: 20px;" onclick="navigateTo('home')">
-            🏠 Вернуться на главную
-        </button>
-    </div>
-</div>
-
 
         <!-- ========== АДРЕСА ========== -->
         <div class="page" id="addressesPage">
@@ -1323,6 +1291,17 @@
                     <div class="settings-label"><span>🌐</span><span>Язык</span></div>
                     <span style="color: var(--text-muted);">Русский</span>
                 </div>
+
+ <div class="settings-item" onclick="window.location.href='tel:+79385401876'" style="cursor: pointer;">
+    <div class="settings-label">
+        <span>📞</span> <!-- Заменил глобус на трубку -->
+        <span>горячая линия</span>
+    </div>
+    <a href="tel:+79385401876" style="color: var(--text-muted); text-decoration: none;">
+        +7 938 540 1876
+    </a>
+</div>
+
             </div>
             <div style="padding: 16px;">
                 <button class="admin-btn-secondary" onclick="localStorage.clear(); location.reload();">🗑️ Очистить данные</button>
@@ -1914,8 +1893,8 @@ function renderOrderSuccessPage() {
     `;
 }
 
-function generateOrderMessage() {
-    if (!currentOrder) return null;
+function sendToWhatsApp() {
+    if (!currentOrder) return;
     let message = `*🛵 НОВЫЙ ЗАКАЗ #${currentOrder.number}*\n\n`;
     message += `*Клиент:* ${currentOrder.name}\n`;
     message += `*Телефон:* ${currentOrder.phone}\n`;
@@ -1928,41 +1907,9 @@ function generateOrderMessage() {
     });
     message += `\n*Итого: ${currentOrder.total} ₽*\n`;
     message += `\n_Время: ${currentOrder.time}_`;
-    return message;
-}
-
-function sendToWhatsApp() {
-    const message = generateOrderMessage();
-    if (!message) return;
     const url = `https://wa.me/${OWNER_PHONE}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
     showToast('📱 WhatsApp открыт');
-}
-
-function sendToTelegram() {
-    if (!currentOrder) return;
-
-    let message = `🛵 НОВЫЙ ЗАКАЗ #${currentOrder.number}\n`;
-    message += `Клиент: ${currentOrder.name}\n`;
-    message += `Сумма: ${currentOrder.total} ₽`;
-
-    // Кодируем текст, чтобы пробелы и переносы строк не сломали ссылку
-    const encodedText = encodeURIComponent(message);
-    
-    // Используем формат share — он лучше всего вставляет текст в мобильный TG
-    const url = `https://t.me/Loikov_2`;
-    
-    window.open(url, '_blank');
-}
-
-
-function sendToMax() {
-    const message = generateOrderMessage();
-    if (!message) return;
-    // Если "Max" — это внутренний чат или специфичный сервис, 
-    // укажите здесь его протокол или URL. Пока сделаем как общую отправку:
-    console.log("Отправка в Max:", message);
-    showToast('📱 Сообщение в Max сформировано');
 }
 
 // ========== АДМИНКА ==========
