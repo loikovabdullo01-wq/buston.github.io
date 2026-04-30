@@ -1908,7 +1908,10 @@ function sendToWhatsApp() {
     });
     message += `\n*Итого: ${currentOrder.total} ₽*\n`;
     message += `\n_Время: ${currentOrder.time}_`;
-    const url = `https://wa.me/${OWNER_PHONE}?text=${encodeURIComponent(message)}`;
+    
+    // Номер изменен на 79036037081
+    const url = `https://wa.me{encodeURIComponent(message)}`;
+    
     window.open(url, '_blank');
     showToast('📱 WhatsApp открыт');
 }
