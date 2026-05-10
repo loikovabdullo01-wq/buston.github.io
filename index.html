@@ -1186,7 +1186,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Адрес доставки</label>
-                        <input type="text" class="form-input" id="customerAddress" value="пр. Ленинского Комсомола, 53" readonly onclick="navigateTo('addresses')">
+                        <input type="text" class="form-input" id="customerAddress" value="пр. Ленинского Комсомола, 55" readonly onclick="navigateTo('addresses')">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Способ оплаты</label>
@@ -1690,7 +1690,7 @@ const OWNER_PHONE = '79385401876';
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 let addresses = JSON.parse(localStorage.getItem('addresses')) || [
-    { id: 1, title: 'Дом', address: 'пр. Ленинского Комсомола, 53', isDefault: true },
+    { id: 1, title: 'Дом', address: 'пр. Ленинского Комсомола, 55', isDefault: true },
     { id: 2, title: 'Работа', address: 'ул. Ленина, 10, офис 305', isDefault: false }
 ];
 let selectedAddress = addresses.find(a => a.isDefault) || addresses[0];
