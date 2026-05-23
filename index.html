@@ -1527,10 +1527,14 @@ body {
                 <div class="success-text" id="successOrderNumber">Заказ #BUSTON-001</div>
                 <div class="success-order-details" id="successOrderDetails"></div>
                 <p style="color: var(--text-secondary); margin: 20px 0;">Мы отправиv детали заказа в WhatsApp</p>
-                  <span style="color: var(--accent-red); font-size: 0.9em;">
+                <span style="color: var(--accent-red); font-size: 0.9em;">
                 ⚠️ Перед отправкой убедитесь, что у вас включён VPN ⚠️
             </span>
-               <br> <button class="checkout-btn" onclick="sendToWhatsApp()">📱 oтправить в whatsApp</button>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                    <button class="checkout-btn" onclick="sendToWhatsApp()">📱 отправить в WhatsApp</button>
+                    <button class="checkout-btn" onclick="sendToTelegram()" style="background-color: #0088cc;">✈️ отправить в Telegram</button>
+                    <button class="checkout-btn" onclick="sendToMAX()" style="background-color: #ff5722;">💬 отправить в MAX</button>
+                </div>
                 <button class="admin-btn-secondary" style="margin-top: 12px;" onclick="navigateTo('home')">🏠 На главную</button>
             </div>
         </div>
@@ -2354,7 +2358,15 @@ function renderOrderSuccessPage() {
 }
 
 function sendToWhatsApp() {
-    if (!currentOrder) return;
+    // helper to build message moved below
+    const message = getOrderTextMessage();
+    const url = `https://wa.me/79877423172?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+    showToast('📱 WhatsApp открыт');
+}
+
+function getOrderTextMessage() {
+    if (!currentOrder) return '';
     let message = `*🛵 НОВЫЙ ЗАКАЗ #${currentOrder.number}*\n\n`;
     message += `*Клиент:* ${currentOrder.name}\n`;
     message += `*Телефон:* ${currentOrder.phone}\n`;
@@ -2367,9 +2379,25 @@ function sendToWhatsApp() {
     });
     message += `\n*Итого: ${currentOrder.total} ₽*\n`;
     message += `\n_Время: ${currentOrder.time}_`;
-  const url = `https://wa.me/79877423172?text=${encodeURIComponent(message)}`;
+    return message;
+}
+
+function sendToTelegram() {
+    if (!currentOrder) return;
+    let message = getOrderTextMessage();
+    // Ссылка на Telegram (используется номер телефона в пути)
+    const url = `https://t.me/+79535555335?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
-    showToast('📱 WhatsApp открыт');
+    showToast('📱 Telegram открыт');
+}
+
+function sendToMAX() {
+    if (!currentOrder) return;
+    let message = getOrderTextMessage();
+    // Ссылка на MAX, привязана к номеру +79877423172
+    const url = `https://max.ru/send?number=+79877423172&text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+    showToast('💬 Мессенджер MAX открыт');
 }
 
 
