@@ -2820,13 +2820,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Функция для обновления цены в DOM
 function updatePriceInDOM(productId, newPrice) {
-    // Ищем все элементы цены для этого товара в DOM
-    // Селектор может зависит от структуры HTML, но обычно цена находится в .product-price
-    const priceElements = document.querySelectorAll(`[data-product-id="${productId}"] .product-price`);
-    priceElements.forEach(el => {
-        el.textContent = `${newPrice} ₽`;
-    });
+    console.log("DOM updated for:", productId, newPrice);
+    
+    // Ищем элемент цены на странице. 
+    // Скрипт пытается найти его по ID карточки или по атрибуту данных.
+    const priceElements = document.querySelectorAll(`.product-card[data-id="${productId}"] .product-price, #${productId} .price, [data-product-id="${productId}"] .price`);
+    
+    if (priceElements.length > 0) {
+        priceElements.forEach(el => {
+            // Меняем ТОЛЬКО текст цены, не трогая саму карточку
+            el.textContent = `${newPrice} ₽`;
+        });
+    } else {
+        // Если ИИ-агент привязал цену к названию товара, ищем по тексту
+        const cards = document.querySelectorAll('.product-name, .product-title, h3, h4');
+        cards.forEach(card => {
+            if (card.textContent.trim().toLowerCase() === String(productId).toLowerCase()) {
+                const parent = card.closest('.product-card, .card, li, div');
+                if (parent) {
+                    const priceEl = parent.querySelector('.price, .product-price, span');
+                    if (priceEl) {
+                        priceEl.textContent = `${newPrice} ₽`;
+                    }
+                }
+            }
+        });
+    }
 }
+
     </script>
 
     <!-- Firebase Firestore Integration -->
