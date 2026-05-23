@@ -2311,7 +2311,12 @@ function placeOrder() {
         return;
     }
     const orderNumber = 'BUSTON-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    // ⚠️ Защитный код: гарантируем что все цены - числа
+    const total = cart.reduce((sum, item) => {
+        const price = Number(item.price) || 0;
+        const qty = Number(item.quantity) || 1;
+        return sum + price * qty;
+    }, 0);
     currentOrder = {
         number: orderNumber,
         items: [...cart],
@@ -2335,18 +2340,20 @@ function renderOrderSuccessPage() {
         return;
     }
     document.getElementById('successOrderNumber').textContent = `Заказ #${currentOrder.number}`;
-    const itemsHtml = currentOrder.items.map(i => 
-        `<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span>${i.emoji || '🍽️'} ${i.name} x${i.quantity}</span>
-            <span>${i.price * i.quantity} ₽</span>
-        </div>`
-    ).join('');
+    const itemsHtml = currentOrder.items.map(i => {
+        const safePrice = Number(i.price) || 0;
+        const safeQty = Number(i.quantity) || 1;
+        return `<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>${i.emoji || '🍽️'} ${i.name} x${safeQty}</span>
+            <span>${(safePrice * safeQty).toFixed(2)} ₽</span>
+        </div>`;
+    }).join('');
     document.getElementById('successOrderDetails').innerHTML = `
         ${itemsHtml}
         <div style="border-top: 1px solid var(--border-color); margin: 12px 0; padding-top: 12px;">
             <div style="display: flex; justify-content: space-between; font-weight: 700;">
                 <span>Итого:</span>
-                <span>${currentOrder.total} ₽</span>
+                <span>${currentOrder.total.toFixed(2)} ₽</span>
             </div>
         </div>
         <div style="margin-top: 12px; color: var(--text-secondary); font-size: 14px;">
@@ -2375,9 +2382,11 @@ function getOrderTextMessage() {
     if (currentOrder.comment) message += `*Комментарий:* ${currentOrder.comment}\n`;
     message += `\n*Состав заказа:*\n`;
     currentOrder.items.forEach(i => {
-        message += `• ${i.name} x${i.quantity} = ${i.price * i.quantity}₽\n`;
+        const safePrice = Number(i.price) || 0;
+        const safeQty = Number(i.quantity) || 1;
+        message += `• ${i.name} x${safeQty} = ${(safePrice * safeQty).toFixed(2)}₽\n`;
     });
-    message += `\n*Итого: ${currentOrder.total} ₽*\n`;
+    message += `\n*Итого: ${currentOrder.total.toFixed(2)} ₽*\n`;
     message += `\n_Время: ${currentOrder.time}_`;
     return message;
 }
@@ -2442,32 +2451,78 @@ function logoutAdmin() {
     showToast('🔒 Админ-панель скрыта');
 }
 
-function addNewProduct() {
+async function addNewProduct() {
     if (!isAdminAuthenticated) { showPinModal(); return; }
     const name = document.getElementById('newProductName').value;
     const desc = document.getElementById('newProductDesc').value;
-    const price = parseInt(document.getElementById('newProductPrice').value);
+    const price = parseFloat(document.getElementById('newProductPrice').value);
     const type = document.getElementById('newProductType').value;
     const category = document.getElementById('newProductCategory').value;
     const emoji = document.getElementById('newProductEmoji').value || '🍽️';
     const img = document.getElementById('newProductImg').value;
-    if (!name || !price) { showToast('❌ Заполните название и цену'); return; }
-    const newId = Math.max(...products.map(p => p.id)) + 1;
-    products.push({ id: newId, name, desc, price, type, category, emoji, img });
-    saveProducts();
+    if (!name || Number.isNaN(price)) { showToast('❌ Заполните название и цену'); return; }
+
+    const newId = products.length ? Math.max(...products.map(p => Number(p.id) || 0)) + 1 : 1;
+    const newProduct = { id: String(newId), name, desc, price, type, category, emoji, img };
+    if (firestoreEnabled && window.firestoreFuncs) {
+        try {
+            // ⚠️ ВАЖНО: сохраняем в Firestore с полями: name, desc, price, type, category, emoji, img
+            await window.firestoreFuncs.setDoc(
+                window.firestoreFuncs.doc(window.firestoreDb, 'products', String(newId)),
+                {
+                    name,
+                    desc,
+                    price: Number(price),
+                    type,
+                    category,
+                    emoji,
+                    img,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                }
+            );
+            products.push(newProduct);
+            saveProducts();
+            renderProducts();
+            showToast(`✅ ${name} добавлен в Firestore`);
+            return;
+        } catch (err) {
+            console.error('Firestore add error', err);
+            showToast('❌ Ошибка добавления в Firestore');
+            return;
+        }
+    } else {
+        products.push(newProduct);
+        saveProducts();
+        renderProducts();
+        showToast(`✅ ${name} добавлен`);
+    }
+
     document.getElementById('newProductName').value = '';
     document.getElementById('newProductDesc').value = '';
     document.getElementById('newProductPrice').value = '';
     document.getElementById('newProductEmoji').value = '🍽️';
     document.getElementById('newProductImg').value = '';
     document.getElementById('newImagePreview').style.display = 'none';
-    renderProducts();
-    showToast(`✅ ${name} добавлен`);
 }
 
-function deleteProduct(id) {
+async function deleteProduct(id) {
     if (!isAdminAuthenticated) return;
-    products = products.filter(p => p.id !== id);
+    const normalizedId = String(id);
+    if (firestoreEnabled && window.firestoreFuncs) {
+        try {
+            await window.firestoreFuncs.deleteDoc(window.firestoreFuncs.doc(window.firestoreDb, 'products', normalizedId));
+            products = products.filter(p => String(p.id) !== normalizedId);
+            saveProducts();
+            renderProducts();
+            showToast('🗑️ Товар удален из Firestore');
+        } catch (err) {
+            console.error('Firestore delete error', err);
+            showToast('❌ Ошибка удаления из Firestore');
+        }
+        return;
+    }
+    products = products.filter(p => String(p.id) !== normalizedId);
     saveProducts();
     renderProducts();
     showToast('🗑️ Товар удален');
@@ -2475,9 +2530,10 @@ function deleteProduct(id) {
 
 function editProduct(id) {
     if (!isAdminAuthenticated) { showPinModal(); return; }
-    const product = products.find(p => p.id === id);
+    const normalizedId = String(id);
+    const product = products.find(p => String(p.id) === normalizedId);
     if (!product) return;
-    document.getElementById('editProductId').value = id;
+    document.getElementById('editProductId').value = normalizedId;
     document.getElementById('editProductName').value = product.name;
     document.getElementById('editProductDesc').value = product.desc;
     document.getElementById('editProductPrice').value = product.price;
@@ -2494,21 +2550,44 @@ function editProduct(id) {
     document.getElementById('editModal').style.display = 'flex';
 }
 
-function saveProduct() {
-    const id = parseInt(document.getElementById('editProductId').value);
-    const product = products.find(p => p.id === id);
+async function saveProduct() {
+    const id = document.getElementById('editProductId').value;
+    const product = products.find(p => String(p.id) === String(id));
     if (product) {
-        product.name = document.getElementById('editProductName').value;
-        product.desc = document.getElementById('editProductDesc').value;
-        product.price = parseInt(document.getElementById('editProductPrice').value);
-        product.type = document.getElementById('editProductType').value;
-        product.category = document.getElementById('editProductCategory').value;
-        product.emoji = document.getElementById('editProductEmoji').value || '🍽️';
+        const updatedData = {
+            name: document.getElementById('editProductName').value.trim(),
+            desc: document.getElementById('editProductDesc').value.trim(),
+            price: Number(document.getElementById('editProductPrice').value) || 0,
+            type: document.getElementById('editProductType').value,
+            category: document.getElementById('editProductCategory').value,
+            emoji: document.getElementById('editProductEmoji').value || '🍽️'
+        };
         const newImg = document.getElementById('editProductImg').value;
-        if (newImg) product.img = newImg;
-        saveProducts();
-        renderProducts();
-        showToast('✅ Изменения сохранены');
+        if (newImg) updatedData.img = newImg;
+
+        if (firestoreEnabled && window.firestoreFuncs) {
+            try {
+                // ⚠️ ВАЖНО: используем updateDoc, а не setDoc, чтобы не затереть остальные поля
+                await window.firestoreFuncs.updateDoc(
+                    window.firestoreFuncs.doc(window.firestoreDb, 'products', String(id)), 
+                    updatedData
+                );
+                Object.assign(product, updatedData);
+                saveProducts();
+                renderProducts();
+                showToast('✅ Изменения сохранены в Firestore');
+                return;
+            } catch (err) {
+                console.error('Firestore update error', err);
+                showToast('❌ Ошибка сохранения в Firestore');
+                return;
+            }
+        } else {
+            Object.assign(product, updatedData);
+            saveProducts();
+            renderProducts();
+            showToast('✅ Изменения сохранены');
+        }
     }
     closeEditModal();
 }
@@ -2524,9 +2603,23 @@ function saveProducts() {
 // ========== КОРЗИНА ==========
 function addToCart(productId, event) {
     if (event) event.stopPropagation();
-    const product = products.find(p => p.id === productId);
-    const existing = cart.find(item => item.id === productId);
-    existing ? existing.quantity++ : cart.push({ ...product, quantity: 1 });
+    const product = products.find(p => String(p.id) === String(productId));
+    if (!product) {
+        showToast('❌ Товар не найден');
+        return;
+    }
+    const existing = cart.find(item => String(item.id) === String(productId));
+    if (existing) {
+        existing.quantity++;
+    } else {
+        // ⚠️ Защитный код: гарантируем что цена - число
+        const safeProduct = { ...product };
+        if (typeof safeProduct.price !== 'number') {
+            safeProduct.price = Number(safeProduct.price) || 0;
+        }
+        safeProduct.quantity = 1;
+        cart.push(safeProduct);
+    }
     saveCart();
     showToast(`🔥 ${product.name} добавлен`);
     updateAllBadges();
@@ -2534,10 +2627,10 @@ function addToCart(productId, event) {
 }
 
 function updateCartItem(productId, delta) {
-    const item = cart.find(i => i.id === productId);
+    const item = cart.find(i => String(i.id) === String(productId));
     if (item) {
         item.quantity += delta;
-        if (item.quantity <= 0) cart = cart.filter(i => i.id !== productId);
+        if (item.quantity <= 0) cart = cart.filter(i => String(i.id) !== String(productId));
         saveCart();
         renderCartPage();
         updateAllBadges();
@@ -2561,32 +2654,42 @@ function renderCartPage() {
         document.getElementById('checkoutBtn').disabled = true;
         return;
     }
-    container.innerHTML = cart.map(item => `
+    container.innerHTML = cart.map(item => {
+        const safePrice = Number(item.price) || 0;
+        const safeName = String(item.name || '');
+        const safeQty = Number(item.quantity) || 1;
+        return `
         <div class="cart-item">
             <div class="cart-item-emoji">${item.img ? `<img src="${item.img}" onerror="this.onerror=null; this.parentElement.innerHTML='${item.emoji || '🍽️'}';">` : (item.emoji || '🍽️')}</div>
             <div class="cart-item-info">
-                <div class="cart-item-name">${item.name}</div>
-                <div class="cart-item-price">${item.price} ₽ / шт</div>
+                <div class="cart-item-name">${safeName}</div>
+                <div class="cart-item-price">${safePrice.toFixed(2)} ₽ / шт</div>
             </div>
             <div class="cart-item-controls">
-                <button class="qty-btn minus" onclick="updateCartItem(${item.id}, -1)">−</button>
-                <span class="cart-item-qty">${item.quantity}</span>
-                <button class="qty-btn plus" onclick="updateCartItem(${item.id}, 1)">+</button>
+                <button class="qty-btn minus" onclick="updateCartItem('${item.id}', -1)">−</button>
+                <span class="cart-item-qty">${safeQty}</span>
+                <button class="qty-btn plus" onclick="updateCartItem('${item.id}', 1)">+</button>
             </div>
-            <div class="cart-item-total">${item.price * item.quantity} ₽</div>
+            <div class="cart-item-total">${(safePrice * safeQty).toFixed(2)} ₽</div>
         </div>
-    `).join('');
-    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    document.getElementById('subtotalAmount').textContent = `${subtotal} ₽`;
-    document.getElementById('totalAmount').textContent = `${subtotal} ₽`;
+        `;
+    }).join('');
+    const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
+    document.getElementById('subtotalAmount').textContent = `${subtotal.toFixed(2)} ₽`;
+    document.getElementById('totalAmount').textContent = `${subtotal.toFixed(2)} ₽`;
     document.getElementById('checkoutBtn').disabled = false;
 }
 
 // ========== ИЗБРАННОЕ ==========
 function toggleFavorite(productId, event) {
     event.stopPropagation();
-    const index = favorites.indexOf(productId);
-    index > -1 ? favorites.splice(index, 1) : favorites.push(productId);
+    const stringId = String(productId);
+    const index = favorites.findIndex(fav => String(fav) === stringId);
+    if (index > -1) {
+        favorites.splice(index, 1);
+    } else {
+        favorites.push(stringId);
+    }
     localStorage.setItem('favorites', JSON.stringify(favorites));
     renderProducts();
     if (document.getElementById('favoritesPage').classList.contains('active')) renderFavoritesPage();
@@ -2594,7 +2697,7 @@ function toggleFavorite(productId, event) {
 }
 
 function renderFavoritesPage() {
-    const favProducts = products.filter(p => favorites.includes(p.id));
+    const favProducts = products.filter(p => favorites.includes(String(p.id)));
     const grid = document.getElementById('favoritesGrid');
     if (favProducts.length === 0) {
         grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted);">❤️ Добавьте любимые блюда</div>`;
@@ -2636,6 +2739,7 @@ function setCategory(catId) {
 }
 
 function renderProducts() {
+    console.log("Текущие товары в рендере:", products);
     // 1. Фильтрация по режиму, категории и поиску
     let filtered = products.filter(p => {
         if (activeMode === 'cafe' && p.type !== 'cafe') return false;
@@ -2713,7 +2817,7 @@ function renderProducts() {
     }
 
     grid.innerHTML = finalProducts.map(p => {
-        const isFavorite = favorites.includes(p.id);
+        const isFavorite = favorites.includes(String(p.id));
         const adminControls = isAdminAuthenticated ? `
             <div class="admin-controls">
                 <button class="admin-btn edit" onclick="editProduct(${p.id}); event.stopPropagation();">✏️</button>
@@ -2734,7 +2838,7 @@ function renderProducts() {
                     <div class="product-name">${p.name}</div>
                     <div class="product-desc">${p.desc}</div>
                     <div class="product-footer">
-                        <span class="product-price">${p.price} ₽</span>
+                        <span class="product-price">${Number(p.price || 0).toFixed(2)} ₽</span>
                         <button class="add-to-cart" onclick="addToCart(${p.id}, event)">+</button>
                     </div>
                 </div>
@@ -2771,6 +2875,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAllBadges();
     updateAddressDisplay();
     updateCheckoutFormFromProfile();
+
+    if (typeof window.loadProductsFromFirestore === 'function') {
+        window.loadProductsFromFirestore();
+    }
 
     // Загружаем сохранённый способ оплаты
     loadSelectedPayment();
@@ -2817,6 +2925,86 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+    </script>
+    <script type="module">
+        import { db } from './firebase.js';
+        import { collection, addDoc, getDocs, getDoc, doc, setDoc, deleteDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+
+        window.firestoreDb = db;
+        window.firestoreFuncs = { collection, addDoc, getDocs, getDoc, doc, setDoc, deleteDoc, updateDoc };
+
+        window.loadProductsFromFirestore = async function() {
+            if (!window.firestoreFuncs || !window.firestoreDb) return;
+            try {
+                const querySnapshot = await window.firestoreFuncs.getDocs(
+                    window.firestoreFuncs.collection(window.firestoreDb, 'products')
+                );
+                const firestoreProducts = [];
+                querySnapshot.forEach(docSnap => {
+                    const data = docSnap.data() || {};
+                    
+                    // ⚠️ ЗАЩИТНЫЙ КОД: гарантируем правильные типы данных
+                    const id = docSnap.id;
+                    const name = String(data.name || '').trim() || 'Товар без названия';
+                    const desc = String(data.desc || data.description || '').trim(); // поддерживаем обе версии
+                    const price = Math.max(0, Number(data.price) || 0); // цена не может быть отрицательной
+                    const type = String(data.type || 'market').toLowerCase();
+                    const category = String(data.category || 'other').toLowerCase();
+                    const emoji = String(data.emoji || '🍽️').slice(0, 2); // только первый символ/эмодзи
+                    const img = String(data.img || '').trim();
+                    
+                    // Проверяем, что цена - корректное число
+                    if (!Number.isFinite(price)) {
+                        console.warn(`⚠️ Товар "${name}" имеет некорректную цену:`, data.price);
+                    }
+                    
+                    firestoreProducts.push({
+                        id,
+                        name,
+                        desc,
+                        price,
+                        type: ['cafe', 'market'].includes(type) ? type : 'market',
+                        category,
+                        emoji,
+                        img
+                    });
+                });
+                
+                // Заменяем товары только если успешно загрузили из Firestore
+                if (firestoreProducts.length > 0) {
+                    products = firestoreProducts;
+                    saveProducts();
+                    renderProducts();
+                    console.log(`✅ Загружено ${firestoreProducts.length} товаров из Firestore`);
+                } else {
+                    console.warn('⚠️ Firestore коллекция пуста, используем локальные товары');
+                }
+            } catch (err) {
+                console.error('❌ Firestore loadProductsFromFirestore error:', err);
+            }
+        };
+
+        // Простой тест: запись документа в коллекцию `testOrders`, затем чтение
+        async function firestoreTest() {
+            try {
+                const docRef = await addDoc(collection(db, 'testOrders'), {
+                    createdAt: new Date().toISOString(),
+                    note: 'тестовая запись из index.html'
+                });
+                console.log('Firestore: добавлен документ', docRef.id);
+
+                const snapshot = await getDoc(doc(db, 'testOrders', docRef.id));
+                console.log('Firestore: прочитанные данные', snapshot.data());
+
+                alert('Firestore: запись и чтение успешны. Проверьте консоль.');
+            } catch (err) {
+                console.error('Firestore test error', err);
+                alert('Firestore test error: ' + err.message);
+            }
+        }
+
+        // Запустить тест при загрузке страницы
+        firestoreTest();
     </script>
 </body>
 </html>
