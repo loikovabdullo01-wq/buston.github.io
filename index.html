@@ -1707,68 +1707,9 @@ body {
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"></script>
     <script>
-// ========== FIREBASE / FIRESTORE ==========
-const firebaseConfig = {
-    apiKey: "AIzaSyApneYBzn700eUSWVaRaEVJyXu7S5VCEWo",
-    authDomain: "busston-768d8.firebaseapp.com",
-    projectId: "busston-768d8",
-    storageBucket: "busston-768d8.firebasestorage.app",
-    messagingSenderId: "70323271340",
-    appId: "1:70323271340:web:09b037ca6f085337cd5b09",
-    measurementId: "G-QF5PWWV4WC"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-function applyFirestorePriceOverrides(snapshot) {
-    const priceMap = new Map();
-    snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (!data || typeof data.name !== 'string') return;
-        const name = data.name.trim();
-        const price = Number(data.price);
-        if (name && Number.isFinite(price)) {
-            priceMap.set(name, price);
-        }
-    });
-
-    let changed = false;
-    products = products.map((product) => {
-        const overridePrice = priceMap.get(product.name.trim());
-        if (overridePrice !== undefined && overridePrice !== product.price) {
-            changed = true;
-            return { ...product, price: overridePrice };
-        }
-        return product;
-    });
-
-    if (typeof cart !== 'undefined') {
-        cart = cart.map((item) => {
-            const product = products.find((p) => p.id === item.id);
-            return product ? { ...item, price: product.price } : item;
-        });
-    }
-
-    if (changed) {
-        const activePage = document.querySelector('.page.active');
-        if (activePage) {
-            if (activePage.id === 'cartPage') {
-                renderCartPage && renderCartPage();
-            } else if (activePage.id === 'favoritesPage') {
-                renderFavoritesPage && renderFavoritesPage();
-            } else {
-                renderProducts && renderProducts();
-            }
-        }
-        updateAllBadges && updateAllBadges();
-    }
-}
-
 // ========== ДАННЫЕ (локальные файлы) ==========
-let products = [
+let products = JSON.parse(localStorage.getItem('products')) || [
     // --- СТАРЫЕ ТОВАРЫ (кафе и магазин) ---
     { id: 27, name: 'Шурпа из говядины', desc: '400г', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
     { id: 2, name: 'Люля-кебаб', desc: '1 шт · говядина', price: 200, type: 'cafe', category: 'shashlik', img: "Люля-кебаб.webp", emoji: '🍡' },
@@ -2035,44 +1976,6 @@ let products = [
     
     
 ];
-
-async function migrateLocalProductsToFirestore() {
-    try {
-        const productsRef = collection(db, 'products');
-        const snapshot = await getDocs(productsRef);
-        if (!snapshot.empty) {
-            console.log('Firestore already contains products, migration skipped.');
-            return;
-        }
-
-        const uploadPromises = products.map((product) => {
-            const safePrice = Number(product.price);
-            return addDoc(productsRef, {
-                id: product.id,
-                name: String(product.name || ''),
-                desc: String(product.desc || ''),
-                price: Number.isFinite(safePrice) ? safePrice : 0,
-                type: String(product.type || 'market'),
-                category: String(product.category || 'other'),
-                emoji: String(product.emoji || '🍽️'),
-                img: String(product.img || ''),
-                createdAt: new Date(),
-                updatedAt: new Date()
-            });
-        });
-
-        await Promise.all(uploadPromises);
-        console.log(`✅ Миграция: ${uploadPromises.length} товаров загружено в Firestore.`);
-    } catch (error) {
-        console.warn('Ошибка миграции товаров в Firestore:', error);
-    }
-}
-
-migrateLocalProductsToFirestore();
-
-onSnapshot(collection(db, 'products'), applyFirestorePriceOverrides, (error) => {
-    console.warn('Firestore products snapshot error:', error);
-});
 
 const categories = [
     // --- КАФЕ ---
@@ -2913,6 +2816,53 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') checkPin();
         });
     });
+});
+
+// Функция для обновления цены в DOM
+function updatePriceInDOM(productId, newPrice) {
+    // Ищем все элементы цены для этого товара в DOM
+    // Селектор может зависит от структуры HTML, но обычно цена находится в .product-price
+    const priceElements = document.querySelectorAll(`[data-product-id="${productId}"] .product-price`);
+    priceElements.forEach(el => {
+        el.textContent = `${newPrice} ₽`;
+    });
+}
+    </script>
+
+    <!-- Firebase Firestore Integration -->
+    <script type="module">
+// ========== FIREBASE FIRESTORE (Подписка на изменения цен) ==========
+// Инициализируем Firebase Firestore
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyApneyBzn700eUSWVaRaEVJyXu7S5VCEWo",
+  authDomain: "busston-768d8.firebaseapp.com",
+  projectId: "busston-768d8",
+  storageBucket: "busston-768d8.firebasestorage.app",
+  messagingSenderId: "70323271340",
+  appId: "1:70323271340:web:09b037ca6f085337cd5b09",
+  measurementId: "G-QF5PWWV4WC"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+onSnapshot(collection(db, "prices"), (snapshot) => {
+  snapshot.forEach((doc) => {
+    const productId = doc.id;
+    const priceData = doc.data();
+    const newPrice = priceData.value;
+
+    const product = products.find(p => String(p.id) === String(productId));
+    if (product) {
+      product.price = newPrice;
+    }
+    if (typeof updatePriceInDOM === 'function') {
+      updatePriceInDOM(productId, newPrice);
+    }
+  });
 });
     </script>
 </body>
