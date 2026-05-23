@@ -1768,7 +1768,7 @@ function applyFirestorePriceOverrides(snapshot) {
 }
 
 // ========== ДАННЫЕ (локальные файлы) ==========
-let products = JSON.parse(localStorage.getItem('products')) || [
+let products = [
     // --- СТАРЫЕ ТОВАРЫ (кафе и магазин) ---
     { id: 27, name: 'Шурпа из говядины', desc: '400г', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
     { id: 2, name: 'Люля-кебаб', desc: '1 шт · говядина', price: 200, type: 'cafe', category: 'shashlik', img: "Люля-кебаб.webp", emoji: '🍡' },
