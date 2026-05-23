@@ -2036,6 +2036,40 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     
 ];
 
+async function migrateLocalProductsToFirestore() {
+    try {
+        const productsRef = collection(db, 'products');
+        const snapshot = await getDocs(productsRef);
+        if (!snapshot.empty) {
+            console.log('Firestore already contains products, migration skipped.');
+            return;
+        }
+
+        const uploadPromises = products.map((product) => {
+            const safePrice = Number(product.price);
+            return addDoc(productsRef, {
+                id: product.id,
+                name: String(product.name || ''),
+                desc: String(product.desc || ''),
+                price: Number.isFinite(safePrice) ? safePrice : 0,
+                type: String(product.type || 'market'),
+                category: String(product.category || 'other'),
+                emoji: String(product.emoji || '🍽️'),
+                img: String(product.img || ''),
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+        });
+
+        await Promise.all(uploadPromises);
+        console.log(`✅ Миграция: ${uploadPromises.length} товаров загружено в Firestore.`);
+    } catch (error) {
+        console.warn('Ошибка миграции товаров в Firestore:', error);
+    }
+}
+
+migrateLocalProductsToFirestore();
+
 onSnapshot(collection(db, 'products'), applyFirestorePriceOverrides, (error) => {
     console.warn('Firestore products snapshot error:', error);
 });
