@@ -1711,7 +1711,21 @@ body {
     </div>
 
     <script>
-// ========== ДАННЫЕ (локальные файлы) ==========
+// ========== ИНИЦИАЛИЗАЦИЯ FIREBASE ==========
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = (typeof firebase !== 'undefined') ? firebase.firestore() : null;
+
+// ========== ДАННЫЕ (начальная загрузка из localStorage) ==========
 let products = JSON.parse(localStorage.getItem('products')) || [
     // --- СТАРЫЕ ТОВАРЫ (кафе и магазин) ---
     { id: 27, name: 'Шурпа из говядины', desc: '400г', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
@@ -1979,6 +1993,32 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     
     
 ];
+
+// ========== ПОДПИСКА НА КАТАЛОГ В FIRESTORE (REALTIME) ==========
+if (db) {
+    db.collection("shopData").doc("catalog").onSnapshot((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            if (data && Array.isArray(data.items)) {
+                console.log("🔄 Получены свежие данные каталога из Firebase");
+                products = data.items;
+                localStorage.setItem('products', JSON.stringify(products));
+                if (typeof renderProducts === 'function') {
+                    renderProducts();
+                }
+            }
+        } else {
+            // Документ еще не создан — загружаем текущий массив в облако
+            console.log("📤 Документ catalog не найден, создаём с текущими товарами");
+            db.collection("shopData").doc("catalog").set({
+                items: products,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(err => console.error("Ошибка первичной записи каталога:", err));
+        }
+    }, (error) => {
+        console.error("❌ Ошибка слушателя каталога Firestore:", error);
+    });
+}
 
 const categories = [
     // --- КАФЕ ---
@@ -2497,31 +2537,25 @@ function editProduct(id) {
     document.getElementById('editModal').style.display = 'flex';
 }
 
-function saveProduct() {
-    const id = parseInt(document.getElementById('editProductId').value);
-    const product = products.find(p => p.id === id);
-    if (product) {
-        product.name = document.getElementById('editProductName').value;
-        product.desc = document.getElementById('editProductDesc').value;
-        product.price = parseInt(document.getElementById('editProductPrice').value);
-        product.type = document.getElementById('editProductType').value;
-        product.category = document.getElementById('editProductCategory').value;
-        product.emoji = document.getElementById('editProductEmoji').value || '🍽️';
-        const newImg = document.getElementById('editProductImg').value;
-        if (newImg) product.img = newImg;
-        saveProducts();
-        renderProducts();
-        showToast('✅ Изменения сохранены');
+// ========== СОХРАНЕНИЕ ТОВАРОВ (ЛОКАЛЬНО + FIRESTORE) ==========
+function saveProducts() {
+    // 1. Локальное сохранение
+    localStorage.setItem('products', JSON.stringify(products));
+    
+    // 2. Отправка в облако (если Firebase доступен)
+    if (db) {
+        db.collection("shopData").doc("catalog").set({
+            items: products,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true })
+        .catch(error => {
+            console.error("❌ Ошибка синхронизации каталога с Firestore:", error);
+        });
     }
-    closeEditModal();
 }
 
 function closeEditModal() {
     document.getElementById('editModal').style.display = 'none';
-}
-
-function saveProducts() {
-    localStorage.setItem('products', JSON.stringify(products));
 }
 
 // ========== КОРЗИНА ==========
@@ -2820,84 +2854,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-
-// ========== ОТКАЗОУСТОЙЧИВЫЙ СЛУШАТЕЛЬ ЦЕН ИЗ FIRESTORE ==========
-// Блок слушателя db.collection("prices").onSnapshot с резервным обновлением DOM
-(function setupPriceListener() {
-    // Инициализация Firebase (замените конфигурацию на свою)
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_AUTH_DOMAIN",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_STORAGE_BUCKET",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
-    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = (typeof firebase !== 'undefined') ? firebase.firestore() : undefined;
-
-    if (!db) {
-        console.warn('Firebase не инициализирован, слушатель цен отключён');
-        return;
-    }
-
-    // Резервное прямое обновление DOM, если updatePriceInDOM ещё не определена
-    function fallbackUpdateDOM(productId, newPrice) {
-        const cards = document.querySelectorAll('.product-card');
-        cards.forEach(card => {
-            const btn = card.querySelector('.add-to-cart');
-            if (btn) {
-                const match = btn.getAttribute('onclick').match(/addToCart\((\d+)/);
-                if (match && parseInt(match[1]) === productId) {
-                    const priceEl = card.querySelector('.product-price');
-                    if (priceEl) {
-                        priceEl.textContent = `${newPrice} ₽`;
-                    }
-                }
-            }
-        });
-    }
-
-    // Функция безопасного обновления с учётом возможной неготовности products
-    function tryUpdatePrice(productId, newPrice, attempts = 8) {
-        // Ждём, пока массив products будет доступен и не пуст
-        if (typeof products !== 'undefined' && Array.isArray(products) && products.length > 0) {
-            const product = products.find(p => p.id == productId);
-            if (product) {
-                product.price = newPrice;
-                saveProducts(); // обновляем localStorage
-                // Если существует специальная функция updatePriceInDOM — вызываем её
-                if (typeof updatePriceInDOM === 'function') {
-                    updatePriceInDOM(productId, newPrice);
-                } else {
-                    fallbackUpdateDOM(productId, newPrice);
-                }
-            } else {
-                console.warn(`Продукт с id ${productId} не найден в массиве products`);
-            }
-        } else if (attempts > 0) {
-            // Массив products ещё не готов, пробуем позже
-            setTimeout(() => tryUpdatePrice(productId, newPrice, attempts - 1), 600);
-        } else {
-            console.warn(`Не удалось обновить цену для товара ${productId} после нескольких попыток`);
-        }
-    }
-
-    db.collection("prices").onSnapshot((snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-            if (change.type === "modified" || change.type === "added") {
-                const data = change.doc.data();
-                if (data && data.productId != null && data.price != null) {
-                    tryUpdatePrice(data.productId, data.price);
-                }
-            }
-        });
-    }, (error) => {
-        console.error('Ошибка слушателя Firestore (prices):', error);
-    });
-})();
     </script>
 </body>
 </html>
