@@ -1361,6 +1361,9 @@ body {
     box-shadow: var(--shadow-md);
 }
     </style>
+    <!-- Firebase SDK (добавлено для слушателя цен) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
     <div class="app">
@@ -2818,27 +2821,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Функция для обновления цены в DOM
-function updatePriceInDOM(productId, newPrice) {
-    console.log("DOM updated for:", productId, newPrice);
-    
-    // Ищем элемент цены на странице. 
-    // Скрипт пытается найти его по ID карточки или по атрибуту данных.
-    const priceElements = document.querySelectorAll(`.product-card[data-id="${productId}"] .product-price, #${productId} .price, [data-product-id="${productId}"] .price`);
-    
-    if (priceElements.length > 0) {
-        priceElements.forEach(el => {
-            // Меняем ТОЛЬКО текст цены, не трогая саму карточку
-            el.textContent = `${newPrice} ₽`;
-        });
-    } else {
-        // Если ИИ-агент привязал цену к названию товара, ищем по тексту
-        const cards = document.querySelectorAll('.product-name, .product-title, h3, h4');
+// ========== ОТКАЗОУСТОЙЧИВЫЙ СЛУШАТЕЛЬ ЦЕН ИЗ FIRESTORE ==========
+// Блок слушателя db.collection("prices").onSnapshot с резервным обновлением DOM
+(function setupPriceListener() {
+    // Инициализация Firebase (замените конфигурацию на свою)
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = (typeof firebase !== 'undefined') ? firebase.firestore() : undefined;
+
+    if (!db) {
+        console.warn('Firebase не инициализирован, слушатель цен отключён');
+        return;
+    }
+
+    // Резервное прямое обновление DOM, если updatePriceInDOM ещё не определена
+    function fallbackUpdateDOM(productId, newPrice) {
+        const cards = document.querySelectorAll('.product-card');
         cards.forEach(card => {
-            if (card.textContent.trim().toLowerCase() === String(productId).toLowerCase()) {
-                const parent = card.closest('.product-card, .card, li, div');
-                if (parent) {
-                    const priceEl = parent.querySelector('.price, .product-price, span');
+            const btn = card.querySelector('.add-to-cart');
+            if (btn) {
+                const match = btn.getAttribute('onclick').match(/addToCart\((\d+)/);
+                if (match && parseInt(match[1]) === productId) {
+                    const priceEl = card.querySelector('.product-price');
                     if (priceEl) {
                         priceEl.textContent = `${newPrice} ₽`;
                     }
@@ -2846,45 +2859,45 @@ function updatePriceInDOM(productId, newPrice) {
             }
         });
     }
-}
 
-    </script>
-
-    <!-- Firebase Firestore Integration -->
-    <script type="module">
-// ========== FIREBASE FIRESTORE (Подписка на изменения цен) ==========
-// Инициализируем Firebase Firestore
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyApneyBzn700eUSWVaRaEVJyXu7S5VCEWo",
-  authDomain: "busston-768d8.firebaseapp.com",
-  projectId: "busston-768d8",
-  storageBucket: "busston-768d8.firebasestorage.app",
-  messagingSenderId: "70323271340",
-  appId: "1:70323271340:web:09b037ca6f085337cd5b09",
-  measurementId: "G-QF5PWWV4WC"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-onSnapshot(collection(db, "prices"), (snapshot) => {
-  snapshot.forEach((doc) => {
-    const productId = doc.id;
-    const priceData = doc.data();
-    const newPrice = priceData.value;
-
-    const product = products.find(p => String(p.id) === String(productId));
-    if (product) {
-      product.price = newPrice;
+    // Функция безопасного обновления с учётом возможной неготовности products
+    function tryUpdatePrice(productId, newPrice, attempts = 8) {
+        // Ждём, пока массив products будет доступен и не пуст
+        if (typeof products !== 'undefined' && Array.isArray(products) && products.length > 0) {
+            const product = products.find(p => p.id == productId);
+            if (product) {
+                product.price = newPrice;
+                saveProducts(); // обновляем localStorage
+                // Если существует специальная функция updatePriceInDOM — вызываем её
+                if (typeof updatePriceInDOM === 'function') {
+                    updatePriceInDOM(productId, newPrice);
+                } else {
+                    fallbackUpdateDOM(productId, newPrice);
+                }
+            } else {
+                console.warn(`Продукт с id ${productId} не найден в массиве products`);
+            }
+        } else if (attempts > 0) {
+            // Массив products ещё не готов, пробуем позже
+            setTimeout(() => tryUpdatePrice(productId, newPrice, attempts - 1), 600);
+        } else {
+            console.warn(`Не удалось обновить цену для товара ${productId} после нескольких попыток`);
+        }
     }
-    if (typeof updatePriceInDOM === 'function') {
-      updatePriceInDOM(productId, newPrice);
-    }
-  });
-});
+
+    db.collection("prices").onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === "modified" || change.type === "added") {
+                const data = change.doc.data();
+                if (data && data.productId != null && data.price != null) {
+                    tryUpdatePrice(data.productId, data.price);
+                }
+            }
+        });
+    }, (error) => {
+        console.error('Ошибка слушателя Firestore (prices):', error);
+    });
+})();
     </script>
 </body>
 </html>
