@@ -1711,22 +1711,27 @@ body {
     </div>
 
     <script>
-// ========== ИНИЦИАЛИЗАЦИЯ FIREBASE ==========
+// ============ ИНИЦИАЛИЗАЦИЯ FIREBASE ============
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyApneYBzn700eUSWVaRaEVJyXu7S5VCEWo",
+    authDomain: "://firebaseapp.com",
+    projectId: "busston-768d8",
+    storageBucket: "busston-768d8.firebasestorage.app",
+    messagingSenderId: "703723271340",
+    appId: "1:703723271340:web:09b037ca6f085337cd5b09",
+    measurementId: "G-QF5PWWV4WC"
 };
+
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
+
 const db = (typeof firebase !== 'undefined') ? firebase.firestore() : null;
 
-// ========== ДАННЫЕ (начальная загрузка из localStorage) ==========
+
+// ============ ДАННЫЕ (начальная загрузка из localStorage) ============
 let products = JSON.parse(localStorage.getItem('products')) || [
+
     // --- СТАРЫЕ ТОВАРЫ (кафе и магазин) ---
     { id: 27, name: 'Шурпа из говядины', desc: '400г', price: 300, type: 'cafe', category: 'dish', img: "99.jpg", emoji: '🍢' },
     { id: 2, name: 'Люля-кебаб', desc: '1 шт · говядина', price: 200, type: 'cafe', category: 'shashlik', img: "Люля-кебаб.webp", emoji: '🍡' },
@@ -2015,9 +2020,10 @@ if (db) {
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }).catch(err => console.error("Ошибка первичной записи каталога:", err));
         }
-    }, (error) => {
-        console.error("❌ Ошибка слушателя каталога Firestore:", error);
-    });
+  }, (err) => {
+    console.error("❌ Ошибка слушателя каталога Firestore:", err);
+});
+
 }
 
 const categories = [
