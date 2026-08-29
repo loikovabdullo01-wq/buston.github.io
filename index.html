@@ -1393,14 +1393,14 @@ body {
                         <option value="drinks">🥤 Напитки</option>
                         <option value="sauces">🍶 Соусы</option>
                         <option value="grocery">🛒 Продукты</option>
+                        <option value="all">✅ Все</option>
                     </select>
-                    <input type="text" class="form-input" id="editProductEmoji" placeholder="Эмодзи (если нет картинки)">
                     <div class="file-upload-label" onclick="document.getElementById('editImageUpload').click()">📸 Загрузить картинку</div>
                     <input type="file" id="editImageUpload" accept="image/*" style="display:none" onchange="handleEditImageUpload(event)">
                     <img id="editImagePreview" style="display:none; width:80px; height:80px; object-fit:cover; border-radius:12px; margin-top:8px;">
                     <input type="hidden" id="editProductImg">
-                    <button class="modal-btn" onclick="saveProduct()">💾 Сохранить</button>
-                    <button class="admin-btn-secondary" style="margin-top: 8px;" onclick="closeEditModal()">Отмена</button>
+                    <button class="modal-btn" type="button" style="position: relative; z-index: 9999; pointer-events: auto;" onclick="saveProduct()">💾 Сохранить</button>
+                    <button class="admin-btn-secondary" type="button" style="margin-top: 8px;" onclick="closeEditModal()">Отмена</button>
                 </div>
             </div>
         </div>
@@ -1681,6 +1681,7 @@ body {
                                 <option value="drinks">🥤 Напитки</option>
                                 <option value="sauces">🍶 Соусы</option>
                                 <option value="grocery">🛒 Продукты</option>
+                                <option value="all">✅ Все</option>
                             </select>
                             <input type="text" class="form-input" id="newProductEmoji" placeholder="Эмодзи" value="🍽️">
                             <div class="file-upload-label" onclick="document.getElementById('newImageUpload').click()">📸 Загрузить картинку</div>
@@ -2571,7 +2572,6 @@ function editProduct(id) {
     document.getElementById('editProductPrice').value = product.price;
     document.getElementById('editProductType').value = product.type;
     document.getElementById('editProductCategory').value = product.category;
-    document.getElementById('editProductEmoji').value = product.emoji || '';
     document.getElementById('editProductImg').value = product.img || '';
     if (product.img && product.img.trim() !== '') {
         document.getElementById('editImagePreview').src = product.img;
@@ -2580,6 +2580,43 @@ function editProduct(id) {
         document.getElementById('editImagePreview').style.display = 'none';
     }
     document.getElementById('editModal').style.display = 'flex';
+}
+
+function saveProduct() {
+    const id = document.getElementById('editProductId').value;
+    const productIndex = products.findIndex(p => p.id == id);
+    
+    if (productIndex === -1) {
+        showToast('❌ Товар не найден');
+        return;
+    }
+
+    const name = document.getElementById('editProductName').value;
+    const desc = document.getElementById('editProductDesc').value;
+    const price = parseInt(document.getElementById('editProductPrice').value);
+    const type = document.getElementById('editProductType').value;
+    const category = document.getElementById('editProductCategory').value;
+    const img = document.getElementById('editProductImg').value;
+
+    if (!name || !price) {
+        showToast('❌ Заполните название и цену');
+        return;
+    }
+
+    products[productIndex] = {
+        ...products[productIndex],
+        name: name,
+        desc: desc,
+        price: price,
+        type: type,
+        category: category,
+        img: img
+    };
+
+    saveProducts();
+    closeEditModal();
+    renderProducts();
+    showToast(`✅ ${name} обновлен`);
 }
 
 // ========== СОХРАНЕНИЕ ТОВАРОВ (ЛОКАЛЬНО + FIRESTORE) ==========
