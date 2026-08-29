@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>BUSTON | маркет</title>
+    <link rel="icon" type="image/jpeg" href="13.jpg">
     <style>
   * {
     margin: 0;
@@ -1364,6 +1365,8 @@ body {
     <!-- Firebase SDK (добавлено для слушателя цен) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- ImgBB виджет загрузки изображений -->
+    <script async src="https://imgbb.com/upload.js"></script>
 </head>
 <body>
     <div class="app">
@@ -1713,13 +1716,13 @@ body {
     <script>
 // ============ ИНИЦИАЛИЗАЦИЯ FIREBASE ============
 const firebaseConfig = {
-    apiKey: "AIzaSyApneYBzn700eUSWVaRaEVJyXu7S5VCEWo",
-    authDomain: "://firebaseapp.com",
-    projectId: "busston-768d8",
-    storageBucket: "busston-768d8.firebasestorage.app",
-    messagingSenderId: "703723271340",
-    appId: "1:703723271340:web:09b037ca6f085337cd5b09",
-    measurementId: "G-QF5PWWV4WC"
+  apiKey: "AIzaSyApneYBzn700eUSWVaRaEVJyXu7S5VCEWo",
+  authDomain: "busston-768d8.firebaseapp.com",
+  projectId: "busston-768d8",
+  storageBucket: "busston-768d8.firebasestorage.app",
+  messagingSenderId: "703723271340",
+  appId: "1:703723271340:web:09b037ca6f085337cd5b09",
+  measurementId: "G-QF5PWWV4WC"
 };
 
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
@@ -2052,6 +2055,30 @@ const categories = [
 
 const ADMIN_PIN = '1234';
 const OWNER_PHONE = '79385401876';
+// Ключи ImgBB для загрузки фото товаров (второй — резервный, если первый исчерпал лимит)
+const IMGBB_API_KEYS = ['044c84fb33e068293052ead694715174', 'ae79450043550a3062e2c2d40308a877'];
+
+async function uploadImageToImgBB(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+    let lastError = null;
+    for (const key of IMGBB_API_KEYS) {
+        try {
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${key}`, {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.success) {
+                return result.data.url;
+            }
+            lastError = result.error?.message || 'Неизвестная ошибка ImgBB';
+        } catch (err) {
+            lastError = err.message;
+        }
+    }
+    throw new Error(lastError || 'Не удалось загрузить изображение');
+}
 
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
@@ -2067,6 +2094,8 @@ let activeCategory = 'all';
 let searchQuery = '';
 let isAdminAuthenticated = false;
 let currentOrder = null;
+// Порядок карточек для вкладки "Все" — перемешивается один раз за загрузку страницы
+let mixedDisplayOrder = [];
 
 // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КАРТИНОК ==========
 function getProductImageHTML(product) {
@@ -2080,29 +2109,39 @@ function getProductImageHTML(product) {
 function handleNewImageUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const base64 = e.target.result;
-        document.getElementById('newProductImg').value = base64;
-        const preview = document.getElementById('newImagePreview');
-        preview.src = base64;
-        preview.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
+    const preview = document.getElementById('newImagePreview');
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+    showToast('⏳ Загрузка фото на ImgBB...');
+    uploadImageToImgBB(file)
+        .then(url => {
+            document.getElementById('newProductImg').value = url;
+            preview.src = url;
+            showToast('✅ Фото загружено');
+        })
+        .catch(err => {
+            console.error('Ошибка загрузки на ImgBB:', err);
+            showToast('❌ Не удалось загрузить фото');
+        });
 }
 
 function handleEditImageUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const base64 = e.target.result;
-        document.getElementById('editProductImg').value = base64;
-        const preview = document.getElementById('editImagePreview');
-        preview.src = base64;
-        preview.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
+    const preview = document.getElementById('editImagePreview');
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+    showToast('⏳ Загрузка фото на ImgBB...');
+    uploadImageToImgBB(file)
+        .then(url => {
+            document.getElementById('editProductImg').value = url;
+            preview.src = url;
+            showToast('✅ Фото загружено');
+        })
+        .catch(err => {
+            console.error('Ошибка загрузки на ImgBB:', err);
+            showToast('❌ Не удалось загрузить фото');
+        });
 }
 
 // ========== СОХРАНЕНИЕ ВЫБРАННОГО СПОСОБА ОПЛАТЫ ==========
@@ -2534,7 +2573,7 @@ function editProduct(id) {
     document.getElementById('editProductCategory').value = product.category;
     document.getElementById('editProductEmoji').value = product.emoji || '';
     document.getElementById('editProductImg').value = product.img || '';
-    if (product.img && product.img.startsWith('data:image')) {
+    if (product.img && product.img.trim() !== '') {
         document.getElementById('editImagePreview').src = product.img;
         document.getElementById('editImagePreview').style.display = 'block';
     } else {
@@ -2678,6 +2717,50 @@ function setCategory(catId) {
     renderProducts();
 }
 
+function shuffleArray(arr) {
+    const result = [...arr];
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+}
+
+// Строит порядок карточек для категории "Все": случайное перемешивание внутри
+// каждого типа + аккуратное чередование кафе/магазин, зафиксированное на время загрузки страницы
+function buildMixedOrder(sourceProducts) {
+    const cafeItems = shuffleArray(sourceProducts.filter(p => p.type === 'cafe'));
+    const marketItems = shuffleArray(sourceProducts.filter(p => p.type === 'market'));
+    const result = [];
+    let ci = 0, mi = 0, turnCafe = true;
+    while (ci < cafeItems.length || mi < marketItems.length) {
+        if (turnCafe ? ci < cafeItems.length : mi >= marketItems.length) {
+            if (ci < cafeItems.length) result.push(cafeItems[ci++]);
+        } else {
+            if (mi < marketItems.length) result.push(marketItems[mi++]);
+        }
+        turnCafe = !turnCafe;
+    }
+    return result.map(p => p.id);
+}
+
+function getMixedProducts(filtered) {
+    const byId = new Map(filtered.map(p => [p.id, p]));
+    // Первая генерация за эту загрузку страницы — случайный порядок
+    if (mixedDisplayOrder.length === 0) {
+        mixedDisplayOrder = buildMixedOrder(filtered);
+    }
+    let ordered = mixedDisplayOrder.map(id => byId.get(id)).filter(Boolean);
+    // Товары, добавленные админом уже после генерации порядка — дописываем в конец
+    const knownIds = new Set(mixedDisplayOrder);
+    const newOnes = filtered.filter(p => !knownIds.has(p.id));
+    if (newOnes.length) {
+        ordered = ordered.concat(shuffleArray(newOnes));
+        mixedDisplayOrder = ordered.map(p => p.id);
+    }
+    return ordered;
+}
+
 function renderProducts() {
     // 1. Фильтрация по режиму, категории и поиску
     let filtered = products.filter(p => {
@@ -2690,47 +2773,15 @@ function renderProducts() {
 
     // Если поиск или выбрана конкретная категория – выводим как есть (без чередования)
     const needMixed = (activeMode === 'all' && activeCategory === 'all' && searchQuery === '');
+    // Магазин, вкладка "Все" — перемешиваем случайно при каждом рендере (загрузка/переключение)
+    const needMarketShuffle = (activeMode === 'market' && activeCategory === 'all' && searchQuery === '');
 
     let finalProducts = [];
 
     if (needMixed) {
-        // Разделяем на две группы: кафе и магазин
-        let cafeItems = filtered.filter(p => p.type === 'cafe');
-        let marketItems = filtered.filter(p => p.type === 'market');
-
-        // Сортируем кафе: сначала блюда (dish), потом шашлык, выпечка, напитки, соусы, комбо
-        const cafeOrder = { dish: 1, shashlik: 2, bakery: 3, drinks: 4, sauces: 5, set: 6 };
-        cafeItems.sort((a, b) => {
-            const orderA = cafeOrder[a.category] || 99;
-            const orderB = cafeOrder[b.category] || 99;
-            if (orderA !== orderB) return orderA - orderB;
-            return a.id - b.id;
-        });
-
-        // Сортируем магазин просто по id
-        marketItems.sort((a, b) => a.id - b.id);
-
-        // Чередование: сначала 4 кафе, потом по 2 магазина / 2 кафе
-        let result = [];
-        // Берём первые 4 кафе
-        let cafeIndex = 0;
-        let marketIndex = 0;
-        // Первые 4 кафе
-        for (let i = 0; i < 4 && cafeIndex < cafeItems.length; i++) {
-            result.push(cafeItems[cafeIndex++]);
-        }
-        // Затем чередуем: 2 магазина, 2 кафе, пока есть товары
-        while (cafeIndex < cafeItems.length || marketIndex < marketItems.length) {
-            // Добавляем 2 из магазина
-            for (let i = 0; i < 2 && marketIndex < marketItems.length; i++) {
-                result.push(marketItems[marketIndex++]);
-            }
-            // Добавляем 2 из кафе
-            for (let i = 0; i < 2 && cafeIndex < cafeItems.length; i++) {
-                result.push(cafeItems[cafeIndex++]);
-            }
-        }
-        finalProducts = result;
+        finalProducts = getMixedProducts(filtered);
+    } else if (needMarketShuffle) {
+        finalProducts = shuffleArray(filtered);
     } else {
         // Обычная сортировка (например, при режиме только кафе или только магазин)
         // Сортируем так же, как раньше
