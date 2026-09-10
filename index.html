@@ -418,8 +418,10 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.product-img img.loaded { opacity: 1; }
 .product-card:hover .product-img img { transform: scale(1.06); }
 .product-type {
     position: absolute;
@@ -2075,7 +2077,7 @@ if (db) {
                 type: data.type || 'market',
                 category: data.category || 'other',
                 emoji: data.emoji || '🍽️',
-                img: data.image || data.img || '',
+                img: data.image || data.img || data.imageUrl || data.photo || data.photoURL || '',
                 __fromCollection: true
             };
         });
@@ -2159,9 +2161,32 @@ let currentOrder = null;
 let mixedDisplayOrder = [];
 
 // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КАРТИНОК ==========
+// Экранируем спецсимволы, чтобы кавычки в названии/URL не ломали inline-атрибуты
+function escapeAttr(str) {
+    return String(str ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// Поле с картинкой в разных источниках могло называться по-разному
+function getProductImageURL(product) {
+    return product.img || product.image || product.imageUrl || product.photo || product.photoURL || '';
+}
+
+// Вызывается из onerror тега <img>: подставляет эмодзи вместо битой/недоступной картинки
+function handleProductImgError(imgEl) {
+    imgEl.onerror = null;
+    const emoji = imgEl.dataset.emoji || '🍽️';
+    if (imgEl.parentElement) {
+        imgEl.parentElement.innerHTML = emoji;
+    }
+}
+
 function getProductImageHTML(product) {
-    if (product.img && product.img.trim() !== '') {
-        return `<img src="${product.img}" alt="${product.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.parentElement.innerHTML='${product.emoji || '🍽️'}';">`;
+    const url = getProductImageURL(product);
+    if (url && String(url).trim() !== '') {
+        const safeUrl = escapeAttr(url);
+        const safeAlt = escapeAttr(product.name || '');
+        const safeEmoji = escapeAttr(product.emoji || '🍽️');
+        return `<img src="${safeUrl}" alt="${safeAlt}" data-emoji="${safeEmoji}" loading="lazy" decoding="async" onload="this.classList.add('loaded')" onerror="handleProductImgError(this)">`;
     } else {
         return product.emoji || '🍽️';
     }
@@ -2742,7 +2767,7 @@ function renderCartPage() {
     }
     container.innerHTML = cart.map(item => `
         <div class="cart-item">
-            <div class="cart-item-emoji">${item.img ? `<img src="${item.img}" onerror="this.onerror=null; this.parentElement.innerHTML='${item.emoji || '🍽️'}';">` : (item.emoji || '🍽️')}</div>
+            <div class="cart-item-emoji">${item.img ? `<img src="${escapeAttr(getProductImageURL(item))}" data-emoji="${escapeAttr(item.emoji || '🍽️')}" onerror="handleProductImgError(this)">` : (item.emoji || '🍽️')}</div>
             <div class="cart-item-info">
                 <div class="cart-item-name">${item.name}</div>
                 <div class="cart-item-price">${item.price} ₽ / шт</div>
