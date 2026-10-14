@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>BUSTON | маркет</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="7878.jpg">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#f7c948">
@@ -392,7 +392,7 @@ body {
 .product-card:active { transform: scale(0.97); transition: transform 0.1s; }
 .product-img {
     width: 100%;
-    aspect-ratio: 1;
+    aspect-ratio: 1 / 1;
     min-height: 150px;
     background: #f5f5f5;
     display: flex;
@@ -408,6 +408,7 @@ body {
     inset: 0;
     background: radial-gradient(circle at 50% 50%, rgba(247, 201, 72, 0.05) 0%, transparent 70%);
     pointer-events: none;
+    z-index: 1;
 }
 .light-theme .product-img {
     background: #f5f5f5;
@@ -416,10 +417,14 @@ body {
     background: radial-gradient(circle at 50% 50%, rgba(212, 149, 15, 0.06) 0%, transparent 70%);
 }
 .product-img img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 150px;
+    height: 100%;
     display: block;
     object-fit: cover;
+    object-position: center;
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .product-card:hover .product-img img { transform: scale(1.06); }
@@ -829,6 +834,7 @@ body {
     font-size: 13px;
     cursor: pointer;
     transition: all 0.3s;
+    white-space: nowrap;
 }
 .theme-option.active {
     background: linear-gradient(135deg, #f7c948, #f59e0b);
@@ -1454,7 +1460,7 @@ body {
             <div class="header">
                 <div class="header-top">
                     <div class="logo">
-                        <img src="log.png" alt="BUSTON Logo" style="width:42px; height:42px; object-fit:contain;">
+                        <img src="7878.jpg" alt="BUSTON Logo" style="width:42px; height:42px; object-fit:contain;">
                         <span class="logo-text">BUSTON | маркет</span>
                     </div>
                     <!-- Круглая кнопка корзины -->
@@ -1466,22 +1472,22 @@ body {
                 <div class="address-bar" onclick="navigateTo('addresses')">
                     <span class="address-icon">📍</span>
                     <span class="address-text" id="selectedAddressDisplay">ул. Восточная, 15к2</span>
-                    <span class="time-badge">Сейчас</span>
+                    <span class="time-badge" data-i18n="now">Сейчас</span>
                 </div>
             </div>
 
             <div class="search-box">
-                <input type="text" class="search-input" placeholder="🔍 Поиск блюд и продуктов..." id="searchInput">
+                <input type="text" class="search-input" placeholder="🔍 Поиск блюд и продуктов..." id="searchInput" data-i18n-placeholder="search_placeholder">
             </div>
 
             <div class="mode-switch">
-                <button class="mode-btn active" data-mode="all">🍽️ Всё</button>
-                <button class="mode-btn" data-mode="cafe">☕ Кафе</button>
-                <button class="mode-btn" data-mode="market">🛒 Магазин</button>
+                <button class="mode-btn active" data-mode="all" data-i18n="mode_all">🍽️ Всё</button>
+                <button class="mode-btn" data-mode="cafe" data-i18n="mode_cafe">☕ Кафе</button>
+                <button class="mode-btn" data-mode="market" data-i18n="mode_market">🛒 Магазин</button>
             </div>
 
             <div class="categories">
-                <div class="categories-title"><span>📋 Категории</span></div>
+                <div class="categories-title"><span data-i18n="categories_title">📋 Категории</span></div>
                 <div class="categories-scroll" id="categoriesScroll"></div>
             </div>
 
@@ -1492,45 +1498,44 @@ body {
         <div class="page" id="cartPage">
             <div class="cart-page">
                 <div class="cart-header">
-                    <h2>🛒 Корзина</h2>
-                    <button class="clear-cart" onclick="clearCart()">Очистить</button>
+                    <h2 data-i18n="cart_title">🛒 Корзина</h2>
+                    <button class="clear-cart" onclick="clearCart()" data-i18n="clear">Очистить</button>
                 </div>
                 <div class="cart-items" id="cartItemsList"></div>
                 <div class="cart-summary">
-                    <div class="summary-row"><span>Товары</span> <span id="subtotalAmount">0 ₽</span></div>
-                    <div class="summary-row"><span>Доставка</span> <span>Бесплатно</span></div>
-                    <div class="summary-total"><span>Итого</span> <span id="totalAmount">0 ₽</span></div>
+                    <div class="summary-row"><span data-i18n="products_label">Товары</span> <span id="subtotalAmount">0 ₽</span></div>
+                    <div class="summary-row"><span data-i18n="delivery_label">Доставка</span> <span data-i18n="free">Бесплатно</span></div>
+                    <div class="summary-total"><span data-i18n="total_label">Итого</span> <span id="totalAmount">0 ₽</span></div>
                 </div>
 
                 <div class="checkout-form">
-                    <div class="form-title">📝 Данные для заказа</div>
+                    <div class="form-title" data-i18n="order_data_title">📝 Данные для заказа</div>
                     <div class="form-group">
-                        <label class="form-label">Имя</label>
+                        <label class="form-label" data-i18n="name_label">Имя</label>
                         <input type="text" class="form-input" id="customerName" value="гость">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Телефон</label>
+                        <label class="form-label" data-i18n="phone_label">Телефон</label>
                         <input type="tel" class="form-input" id="customerPhone" value="+7 ">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Адрес доставки</label>
+                        <label class="form-label" data-i18n="address_label">Адрес доставки</label>
                         <input type="text" class="form-input" id="customerAddress" value="пр. Ленинского Комсомола, 55" readonly onclick="navigateTo('addresses')">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Способ оплаты</label>
+                        <label class="form-label" data-i18n="payment_label">Способ оплаты</label>
                         <div class="payment-methods">
-                            <!-- Активный класс теперь на наличных (cash) -->
-                            <div class="payment-option" data-payment="card">💳 Карта</div>
-                            <div class="payment-option active" data-payment="cash">💵 Наличные</div>
+                            <div class="payment-option" data-payment="card" data-i18n="card_opt">💳 Карта</div>
+                            <div class="payment-option active" data-payment="cash" data-i18n="cash_opt">💵 Наличные</div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Комментарий</label>
-                        <input type="text" class="form-input" id="comment" placeholder="Позвонить за 5 минут">
+                        <label class="form-label" data-i18n="comment_label">Комментарий</label>
+                        <input type="text" class="form-input" id="comment" placeholder="Позвонить за 5 минут" data-i18n-placeholder="comment_placeholder">
                     </div>
                 </div>
 
-                <button class="checkout-btn" id="checkoutBtn" onclick="placeOrder()">🚀 Оформить заказ</button>
+                <button class="checkout-btn" id="checkoutBtn" onclick="placeOrder()" data-i18n="checkout_btn">🚀 Оформить заказ</button>
             </div>
         </div>
 
@@ -1550,7 +1555,7 @@ body {
                     <button class="checkout-btn" onclick="sendToTelegram()" style="background-color: #0088cc;">✈️ отправить в Telegram</button>
                     <button class="checkout-btn" onclick="sendToMAX()" style="background-color: #ff5722;">💬 отправить в MAX</button>
                 </div>
-                <button class="admin-btn-secondary" style="margin-top: 12px;" onclick="navigateTo('home')">🏠 На главную</button>
+                <button class="admin-btn-secondary" style="margin-top: 12px;" onclick="navigateTo('home')" data-i18n="go_home">🏠 На главную</button>
             </div>
         </div>
 
@@ -1558,11 +1563,11 @@ body {
         <div class="page" id="addressesPage">
             <div class="page-header">
                 <button class="back-btn" onclick="navigateTo('profile')">←</button>
-                <div class="page-title">📍 Мои адреса</div>
+                <div class="page-title" data-i18n="my_addresses">📍 Мои адреса</div>
             </div>
             <div class="addresses-list" id="addressesList"></div>
             <div style="padding: 16px;">
-                <button class="checkout-btn" onclick="showAddressModal()">➕ Добавить адрес</button>
+                <button class="checkout-btn" onclick="showAddressModal()" data-i18n="add_address">➕ Добавить адрес</button>
             </div>
         </div>
 
@@ -1570,7 +1575,7 @@ body {
         <div class="page" id="paymentsPage">
             <div class="page-header">
                 <button class="back-btn" onclick="navigateTo('profile')">←</button>
-                <div class="page-title">💳 Способы оплаты</div>
+                <div class="page-title" data-i18n="payment_methods_title">💳 Способы оплаты</div>
             </div>
             <div class="payment-methods-list">
                 <div class="payment-card" onclick="selectPayment(this, 'card')">
@@ -1605,29 +1610,25 @@ body {
         <div class="page" id="settingsPage">
             <div class="page-header">
                 <button class="back-btn" onclick="navigateTo('profile')">←</button>
-                <div class="page-title">⚙️ Настройки</div>
+                <div class="page-title" data-i18n="settings_title">⚙️ Настройки</div>
             </div>
             <div class="settings-section">
                 <div class="settings-item">
-                    <div class="settings-label"><span>🌓</span><span>Тема оформления</span></div>
+                    <div class="settings-label"><span>🌓</span><span data-i18n="theme_label">Тема оформления</span></div>
                     <div class="theme-toggle">
-                        <button class="theme-option active" onclick="setTheme('dark')">🌙 Тёмная</button>
-                        <button class="theme-option" onclick="setTheme('light')">☀️ Светлая</button>
+                        <button class="theme-option active" data-theme="dark" onclick="setTheme('dark')" data-i18n="theme_dark">🌙 Тёмная</button>
+                        <button class="theme-option" data-theme="light" onclick="setTheme('light')" data-i18n="theme_light">☀️ Светлая</button>
                     </div>
                 </div>
                 <div class="settings-item">
-                    <div class="settings-label"><span>🔔</span><span>Уведомления</span></div>
-                    <span style="color: var(--text-muted);">Включены</span>
-                </div>
-                <div class="settings-item">
-                    <div class="settings-label"><span>🌐</span><span>Язык</span></div>
-                    <span style="color: var(--text-muted);">Русский</span>
+                    <div class="settings-label"><span>🔔</span><span data-i18n="notifications_label">Уведомления</span></div>
+                    <span style="color: var(--text-muted);" data-i18n="notifications_on">Включены</span>
                 </div>
 
  <div class="settings-item" onclick="window.location.href='tel:+79200117353'" style="cursor: pointer;">
     <div class="settings-label">
-        <span>📞</span> <!-- Заменил глобус на трубку -->
-        <span>Горячая линия</span>
+        <span>📞</span>
+        <span data-i18n="hotline">Горячая линия</span>
     </div>
     <a href="tel:+79200117353" style="color: var(--text-muted); text-decoration: none;">
        +7 920 011 7353 <br>
@@ -1637,7 +1638,7 @@ body {
 
             </div>
             <div style="padding: 16px;">
-                <button class="admin-btn-secondary" onclick="localStorage.clear(); location.reload();">🗑️ Очистить данные</button>
+                <button class="admin-btn-secondary" onclick="localStorage.clear(); location.reload();" data-i18n="clear_data">🗑️ Очистить данные</button>
             </div>
         </div>
 
@@ -1661,10 +1662,27 @@ body {
                 </div>
             </div>
             <div class="profile-menu">
-                <div class="menu-item" onclick="navigateTo('addresses')"><span class="menu-icon">📍</span><span class="menu-text">Адреса доставки</span><span class="menu-arrow">›</span></div>
-                <div class="menu-item" onclick="navigateTo('payments')"><span class="menu-icon">💳</span><span class="menu-text">Способы оплаты</span><span class="menu-arrow">›</span></div>
-                <div class="menu-item" onclick="navigateTo('favorites')"><span class="menu-icon">❤️</span><span class="menu-text">Избранное</span><span class="menu-arrow">›</span></div>
-                <div class="menu-item" onclick="navigateTo('settings')"><span class="menu-icon">⚙️</span><span class="menu-text">Настройки</span><span class="menu-arrow">›</span></div>
+                <div class="menu-item" onclick="navigateTo('addresses')"><span class="menu-icon">📍</span><span class="menu-text" data-i18n="addresses_menu">Адреса доставки</span><span class="menu-arrow">›</span></div>
+                <div class="menu-item" onclick="navigateTo('payments')"><span class="menu-icon">💳</span><span class="menu-text" data-i18n="payments_menu">Способы оплаты</span><span class="menu-arrow">›</span></div>
+                <div class="menu-item" onclick="navigateTo('favorites')"><span class="menu-icon">❤️</span><span class="menu-text" data-i18n="favorites_menu">Избранное</span><span class="menu-arrow">›</span></div>
+                <div class="menu-item" onclick="navigateTo('settings')"><span class="menu-icon">⚙️</span><span class="menu-text" data-i18n="settings_menu">Настройки</span><span class="menu-arrow">›</span></div>
+
+                <!-- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА В ПРОФИЛЕ -->
+                <div class="menu-item" style="cursor: default;">
+                    <span class="menu-icon">🌐</span>
+                    <span class="menu-text" data-i18n="language_label">Язык</span>
+                    <div class="theme-toggle" style="margin-left: auto;">
+                        <button class="theme-option active" id="profileLangRuBtn" onclick="setLanguage('ru'); event.stopPropagation();">🇷🇺 Рус</button>
+                        <button class="theme-option" id="profileLangTgBtn" onclick="setLanguage('tg'); event.stopPropagation();">🇹🇯 Тоҷ</button>
+                    </div>
+                </div>
+
+                <!-- КНОПКА СКАЧАТЬ APK В ПРОФИЛЕ -->
+                <div class="menu-item" onclick="downloadApk()">
+                    <span class="menu-icon">📥</span>
+                    <span class="menu-text" data-i18n="download_apk">Скачать APK приложение</span>
+                    <span class="menu-arrow">›</span>
+                </div>
             </div>
 
             <!-- Скрытая админ-панель с загрузкой фото -->
@@ -1709,17 +1727,17 @@ body {
         <div class="page" id="favoritesPage">
             <div class="page-header">
                 <button class="back-btn" onclick="navigateTo('profile')">←</button>
-                <div class="page-title">❤️ Избранное</div>
+                <div class="page-title" data-i18n="nav_fav">❤️ Избранное</div>
             </div>
             <div class="products-grid" id="favoritesGrid"></div>
         </div>
 
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
-            <div class="nav-item active" data-page="home" onclick="navigateTo('home')"><span class="nav-icon">🏠</span><span>Главная</span></div>
-            <div class="nav-item" data-page="cart" onclick="navigateTo('cart')"><span class="nav-icon">🛒</span><span>Корзина</span><span class="nav-badge" id="navCartBadge">0</span></div>
-            <div class="nav-item" data-page="favorites" onclick="navigateTo('favorites')"><span class="nav-icon">❤️</span><span>Избранное</span></div>
-            <div class="nav-item" data-page="profile" onclick="navigateTo('profile')"><span class="nav-icon">👤</span><span>Профиль</span></div>
+            <div class="nav-item active" data-page="home" onclick="navigateTo('home')"><span class="nav-icon">🏠</span><span data-i18n="nav_home">Главная</span></div>
+            <div class="nav-item" data-page="cart" onclick="navigateTo('cart')"><span class="nav-icon">🛒</span><span data-i18n="nav_cart">Корзина</span><span class="nav-badge" id="navCartBadge">0</span></div>
+            <div class="nav-item" data-page="favorites" onclick="navigateTo('favorites')"><span class="nav-icon">❤️</span><span data-i18n="nav_fav">Избранное</span></div>
+            <div class="nav-item" data-page="profile" onclick="navigateTo('profile')"><span class="nav-icon">👤</span><span data-i18n="nav_profile">Профиль</span></div>
         </div>
     </div>
 
@@ -1740,6 +1758,181 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
 }
 
 const db = (typeof firebase !== 'undefined') ? firebase.firestore() : null;
+
+
+// ============ ПЕРЕВОДЫ (i18n) ============
+const translations = {
+    ru: {
+        search_placeholder: '🔍 Поиск блюд и продуктов...',
+        now: 'Сейчас',
+        mode_all: '🍽️ Всё',
+        mode_cafe: '☕ Кафе',
+        mode_market: '🛒 Магазин',
+        categories_title: '📋 Категории',
+        nav_home: 'Главная',
+        nav_cart: 'Корзина',
+        nav_fav: 'Избранное',
+        nav_profile: 'Профиль',
+        cart_title: '🛒 Корзина',
+        clear: 'Очистить',
+        cart_empty: '🛒 Корзина пуста',
+        products_label: 'Товары',
+        delivery_label: 'Доставка',
+        free: 'Бесплатно',
+        total_label: 'Итого',
+        order_data_title: '📝 Данные для заказа',
+        name_label: 'Имя',
+        phone_label: 'Телефон',
+        address_label: 'Адрес доставки',
+        payment_label: 'Способ оплаты',
+        card_opt: '💳 Карта',
+        cash_opt: '💵 Наличные',
+        comment_label: 'Комментарий',
+        comment_placeholder: 'Позвонить за 5 минут',
+        checkout_btn: '🚀 Оформить заказ',
+        settings_title: '⚙️ Настройки',
+        theme_label: 'Тема оформления',
+        theme_dark: '🌙 Тёмная',
+        theme_light: '☀️ Светлая',
+        notifications_label: 'Уведомления',
+        notifications_on: 'Включены',
+        language_label: 'Язык',
+        hotline: 'Горячая линия',
+        clear_data: '🗑️ Очистить данные',
+        download_apk: 'Скачать APK приложение',
+        my_addresses: '📍 Мои адреса',
+        add_address: '➕ Добавить адрес',
+        payment_methods_title: '💳 Способы оплаты',
+        addresses_menu: 'Адреса доставки',
+        payments_menu: 'Способы оплаты',
+        favorites_menu: 'Избранное',
+        settings_menu: 'Настройки',
+        no_favorites: '❤️ Добавьте любимые блюда',
+        not_found: '🍽️ Ничего не найдено',
+        go_home: '🏠 На главную',
+        name_saved: '👤 Имя сохранено',
+        phone_saved: '📞 Номер сохранён',
+        photo_updated: '📸 Фото обновлено',
+        added_to_fav: '❤️ Добавлено',
+        removed_from_fav: '💔 Удалено',
+        apk_soon: '📥 Ссылка на APK скоро появится'
+    },
+    tg: {
+        search_placeholder: '🔍 Ҷустуҷӯи хӯрок ва маҳсулот...',
+        now: 'Ҳозир',
+        mode_all: '🍽️ Ҳама',
+        mode_cafe: '☕ Қаҳвахона',
+        mode_market: '🛒 Мағоза',
+        categories_title: '📋 Категорияҳо',
+        nav_home: 'Асосӣ',
+        nav_cart: 'Сабад',
+        nav_fav: 'Дӯстдошта',
+        nav_profile: 'Профил',
+        cart_title: '🛒 Сабад',
+        clear: 'Тоза кардан',
+        cart_empty: '🛒 Сабад холӣ аст',
+        products_label: 'Молҳо',
+        delivery_label: 'Расонидан',
+        free: 'Ройгон',
+        total_label: 'Ҳамагӣ',
+        order_data_title: '📝 Маълумот барои фармоиш',
+        name_label: 'Ном',
+        phone_label: 'Телефон',
+        address_label: 'Суроғаи расонидан',
+        payment_label: 'Тарзи пардохт',
+        card_opt: '💳 Корт',
+        cash_opt: '💵 Нақд',
+        comment_label: 'Шарҳ',
+        comment_placeholder: '5 дақиқа пеш занг занед',
+        checkout_btn: '🚀 Фармоиш додан',
+        settings_title: '⚙️ Танзимот',
+        theme_label: 'Мавзӯи тарҳ',
+        theme_dark: '🌙 Торик',
+        theme_light: '☀️ Равшан',
+        notifications_label: 'Огоҳиномаҳо',
+        notifications_on: 'Фаъол',
+        language_label: 'Забон',
+        hotline: 'Хати гарм',
+        clear_data: '🗑️ Тоза кардани маълумот',
+        download_apk: 'Боргирии барномаи APK',
+        my_addresses: '📍 Суроғаҳои ман',
+        add_address: '➕ Илова кардани суроға',
+        payment_methods_title: '💳 Тарзҳои пардохт',
+        addresses_menu: 'Суроғаҳои расонидан',
+        payments_menu: 'Тарзҳои пардохт',
+        favorites_menu: 'Дӯстдошта',
+        settings_menu: 'Танзимот',
+        no_favorites: '❤️ Хӯрокҳои дӯстдоштаро илова кунед',
+        not_found: '🍽️ Чизе ёфт нашуд',
+        go_home: '🏠 Ба асосӣ',
+        name_saved: '👤 Ном нигоҳ дошта шуд',
+        phone_saved: '📞 Рақам нигоҳ дошта шуд',
+        photo_updated: '📸 Акс навсозӣ шуд',
+        added_to_fav: '❤️ Илова шуд',
+        removed_from_fav: '💔 Нест карда шуд',
+        apk_soon: '📥 Пайванди APK ба зудӣ илова мешавад'
+    }
+};
+
+let currentLang = localStorage.getItem('lang') || 'ru';
+
+// Ссылка на APK (замените на реальную)
+const APK_DOWNLOAD_URL = '#'; // TODO: заменить на реальный URL
+
+function t(key) {
+    if (translations[currentLang] && translations[currentLang][key] !== undefined) {
+        return translations[currentLang][key];
+    }
+    return translations.ru[key] || key;
+}
+
+function applyLanguage() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const val = t(key);
+        if (val !== undefined && val !== null) el.textContent = val;
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        const val = t(key);
+        if (val !== undefined && val !== null) el.placeholder = val;
+    });
+    // Кнопки языка в профиле — активная подсветка
+    const ruBtn = document.getElementById('profileLangRuBtn');
+    const tgBtn = document.getElementById('profileLangTgBtn');
+    if (ruBtn) ruBtn.classList.toggle('active', currentLang === 'ru');
+    if (tgBtn) tgBtn.classList.toggle('active', currentLang === 'tg');
+    // lang атрибут html
+    document.documentElement.lang = currentLang;
+}
+
+function setLanguage(lang) {
+    if (lang !== 'ru' && lang !== 'tg') return;
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    applyLanguage();
+    if (typeof renderCategories === 'function') renderCategories();
+    if (typeof renderProducts === 'function') renderProducts();
+    if (document.getElementById('cartPage')?.classList.contains('active') && typeof renderCartPage === 'function') renderCartPage();
+    if (document.getElementById('favoritesPage')?.classList.contains('active') && typeof renderFavoritesPage === 'function') renderFavoritesPage();
+    if (document.getElementById('addressesPage')?.classList.contains('active') && typeof renderAddressesPage === 'function') renderAddressesPage();
+    if (typeof updateAddressDisplay === 'function') updateAddressDisplay();
+}
+
+// ============ СКАЧИВАНИЕ APK ============
+function downloadApk() {
+    if (!APK_DOWNLOAD_URL || APK_DOWNLOAD_URL === '#') {
+        showToast(t('apk_soon'));
+        return;
+    }
+    const a = document.createElement('a');
+    a.href = APK_DOWNLOAD_URL;
+    a.download = 'BUSTON.apk';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
 
 
 // ============ ДАННЫЕ (начальная загрузка из localStorage) ============
@@ -1890,10 +2083,10 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 { id: 602, name: 'Яблоко зеленое', desc: '1 кг', price: 230, type: 'market', category: 'vegetables', img: 'яблокзел.webp', emoji: '🍏' },
 { id: 603, name: 'Яблоко красное', desc: '1 кг', price: 230, type: 'market', category: 'vegetables', img: 'appl.jpg', emoji: '🍎' },
 { id: 604, name: 'Апельсины большие', desc: '1 кг', price: 350, type: 'market', category: 'vegetables', img: 'apl.webp', emoji: '🍊' },
-{ id: 605, name: 'Виноград красные', desc: 'упаковка', price: 300, type: 'market', category: 'vegetables', img: 'vin.avif', emoji: '🍇' }, // Цена примерная
-{ id: 612, name: 'Виноград черные', desc: 'упаковка', price: 300, type: 'market', category: 'vegetables', img: 'виноградчер.jpg', emoji: '🍇' }, // Цена примерная
+{ id: 605, name: 'Виноград красные', desc: 'упаковка', price: 300, type: 'market', category: 'vegetables', img: 'vin.avif', emoji: '🍇' },
+{ id: 612, name: 'Виноград черные', desc: 'упаковка', price: 300, type: 'market', category: 'vegetables', img: 'виноградчер.jpg', emoji: '🍇' },
 
-{ id: 606, name: 'Мандарины маленькие', desc: '1 кг', price: 250, type: 'market', category: 'vegetables', img: 'мандарин.jpg', emoji: '🍊' }, // Цена примерная
+{ id: 606, name: 'Мандарины маленькие', desc: '1 кг', price: 250, type: 'market', category: 'vegetables', img: 'мандарин.jpg', emoji: '🍊' },
 { id: 607, name: 'Груша', desc: '1 кг', price: 330, type: 'market', category: 'vegetables', img: 'груша.jpg', emoji: '🍐' },
 { id: 608, name: 'Гранат большой', desc: '1 кг', price: 450, type: 'market', category: 'vegetables', img: 'гранат.webp', emoji: '🍎' },
 { id: 609, name: 'Бананы огромные', desc: '1 кг', price: 170, type: 'market', category: 'vegetables', img: 'banan.jpg', emoji: '🍌' },
@@ -1971,7 +2164,7 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 { id: 403, name: 'Торт Шоколадный', desc: 'кусок', price: 250, type: 'market', category: 'sweets', img: 'tort.jpg', emoji: '🍰' },
 { id: 404, name: 'Торт Медовик', desc: '1 шт', price: 250, type: 'market', category: 'sweets', img: 'medovik.jpg', emoji: '🍯' },
 { id: 405, name: 'Пирожное Картошка', desc: '1 кг', price: 350, type: 'market', category: 'sweets', img: 'kor.jpg', emoji: '🥔' },
-{ id: 406, name: 'Пахлава', desc: 'упаковка', price: 0, type: 'market', category: 'sweets', img: 'p.webp', emoji: '🥧' }, // Уточни цену, если нужно
+{ id: 406, name: 'Пахлава', desc: 'упаковка', price: 0, type: 'market', category: 'sweets', img: 'p.webp', emoji: '🥧' },
 { id: 407, name: 'Конфеты', desc: '1 кг', price: 450, type: 'market', category: 'sweets', img: 'kon.jpg', emoji: '🍬' },
 { id: 408, name: 'Шоколад', desc: 'плитка', price: 120, type: 'market', category: 'sweets', img: 'sh.webp', emoji: '🍫' },
 
@@ -2013,9 +2206,6 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 ];
 
 // ========== ПОДПИСКА НА КАТАЛОГ В FIRESTORE (REALTIME) ==========
-// Полный ре-рендер сетки на каждый снапшот вызывал "зависшие" серые карточки
-// при скролле (все <img> пересоздавались и грузились заново). Поэтому рендерим
-// только когда данные реально изменились, и объединяем частые вызовы в один кадр.
 let lastCatalogJSON = null;
 let renderProductsScheduled = false;
 
@@ -2034,7 +2224,7 @@ if (db) {
             const data = doc.data();
             if (data && Array.isArray(data.items)) {
                 const incomingJSON = JSON.stringify(data.items);
-                if (incomingJSON === lastCatalogJSON) return; // ничего не изменилось — не перерисовываем
+                if (incomingJSON === lastCatalogJSON) return;
                 lastCatalogJSON = incomingJSON;
                 console.log("🔄 Получены свежие данные каталога из Firebase");
                 products = data.items;
@@ -2042,7 +2232,6 @@ if (db) {
                 scheduleRenderProducts();
             }
         } else {
-            // Документ еще не создан — загружаем текущий массив в облако
             console.log("📤 Документ catalog не найден, создаём с текущими товарами");
             db.collection("shopData").doc("catalog").set({
                 items: products,
@@ -2056,8 +2245,6 @@ if (db) {
 }
 
 // ========== ПОДПИСКА НА КОЛЛЕКЦИЮ 'products' (АДМИНКА admin.html) ==========
-// Товары, добавленные через admin.html (коллекция 'products'), приходят сюда
-// и подмешиваются к основному каталогу в реальном времени.
 let firestoreProducts = [];
 let lastFirestoreProductsJSON = null;
 
@@ -2082,7 +2269,7 @@ if (db) {
             };
         });
         const incomingJSON = JSON.stringify(incoming);
-        if (incomingJSON === lastFirestoreProductsJSON) return; // без изменений — пропускаем ре-рендер
+        if (incomingJSON === lastFirestoreProductsJSON) return;
         lastFirestoreProductsJSON = incomingJSON;
         firestoreProducts = incoming;
         console.log(`🔄 Получено ${firestoreProducts.length} товар(ов) из коллекции 'products'`);
@@ -2094,31 +2281,30 @@ if (db) {
 
 const categories = [
     // --- КАФЕ ---
-    { id: 'all', name: 'Все', emoji: '🍽️' },
-    { id: 'shashlik', name: 'Шашлык', emoji: '🍢' },
-    { id: 'dish', name: 'Блюда', emoji: '🍜' },
-    { id: 'bakery', name: 'Выпечка', emoji: '🥐' },
-    { id: 'drinks', name: 'Напитки', emoji: '🥤' },
-    { id: 'sauces', name: 'Соус - Салат', emoji: '🍶' },
-    { id: 'set', name: 'Комбо', emoji: '🍱' }, // Вернул 'set', чтобы товары не слетали
+    { id: 'all', name: 'Все', nameTg: 'Ҳама', emoji: '🍽️' },
+    { id: 'shashlik', name: 'Шашлык', nameTg: 'Кабоб', emoji: '🍢' },
+    { id: 'dish', name: 'Блюда', nameTg: 'Хӯрокҳо', emoji: '🍜' },
+    { id: 'bakery', name: 'Выпечка', nameTg: 'Нонвоӣ', emoji: '🥐' },
+    { id: 'drinks', name: 'Напитки', nameTg: 'Нӯшокиҳо', emoji: '🥤' },
+    { id: 'sauces', name: 'Соус - Салат', nameTg: 'Соус - Салат', emoji: '🍶' },
+    { id: 'set', name: 'Комбо', nameTg: 'Комбо', emoji: '🍱' },
 
     // --- МАГАЗИН ---
-    { id: 'grocery', name: 'Бакалея', emoji: '🛒' },
-    { id: 'meat', name: 'Мясо и колбасы', emoji: '🥩' },
-    { id: 'dairy', name: 'Молочка', emoji: '🥛' },
-    { id: 'vegetables', name: 'Овощи и фрукты', emoji: '🍎' },
-    { id: 'tea_coffee', name: 'Чай и кофе', emoji: '☕' },
-    { id: 'sweets', name: 'Сладости', emoji: '🍫' },
-    { id: 'snacks', name: 'Снеки', emoji: '🍿' },
-    { id: 'water', name: 'Вода', emoji: '💧' },
-    { id: 'energy', name: 'Энергетики', emoji: '⚡' }
+    { id: 'grocery', name: 'Бакалея', nameTg: 'Баққолӣ', emoji: '🛒' },
+    { id: 'meat', name: 'Мясо и колбасы', nameTg: 'Гӯшт ва ҳасиб', emoji: '🥩' },
+    { id: 'dairy', name: 'Молочка', nameTg: 'Ширӣ', emoji: '🥛' },
+    { id: 'vegetables', name: 'Овощи и фрукты', nameTg: 'Сабзавот ва меваҳо', emoji: '🍎' },
+    { id: 'tea_coffee', name: 'Чай и кофе', nameTg: 'Чой ва қаҳва', emoji: '☕' },
+    { id: 'sweets', name: 'Сладости', nameTg: 'Шириниҳо', emoji: '🍫' },
+    { id: 'snacks', name: 'Снеки', nameTg: 'Снекҳо', emoji: '🍿' },
+    { id: 'water', name: 'Вода', nameTg: 'Об', emoji: '💧' },
+    { id: 'energy', name: 'Энергетики', nameTg: 'Энергетикҳо', emoji: '⚡' }
 ];
 
 
 
 const ADMIN_PIN = '0880';
 const OWNER_PHONE = '79385401876';
-// Ключи ImgBB для загрузки фото товаров (второй — резервный, если первый исчерпал лимит)
 const IMGBB_API_KEYS = ['044c84fb33e068293052ead694715174', 'ae79450043550a3062e2c2d40308a877'];
 
 async function uploadImageToImgBB(file) {
@@ -2150,28 +2336,23 @@ let addresses = JSON.parse(localStorage.getItem('addresses')) || [
     { id: 2, title: 'Работа', address: 'ул. Ленина, 10, офис 305', isDefault: false }
 ];
 let selectedAddress = addresses.find(a => a.isDefault) || addresses[0];
-// ОПЛАТА ПО УМОЛЧАНИЮ - НАЛИЧНЫЕ
 let selectedPayment = 'cash';
 let activeMode = 'all';
 let activeCategory = 'all';
 let searchQuery = '';
 let isAdminAuthenticated = false;
 let currentOrder = null;
-// Порядок карточек для вкладки "Все" — перемешивается один раз за загрузку страницы
 let mixedDisplayOrder = [];
 
 // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КАРТИНОК ==========
-// Экранируем спецсимволы, чтобы кавычки в названии/URL не ломали inline-атрибуты
 function escapeAttr(str) {
     return String(str ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// Поле с картинкой в разных источниках могло называться по-разному
 function getProductImageURL(product) {
     return product.img || product.image || product.imageUrl || product.photo || product.photoURL || '';
 }
 
-// Вызывается из onerror тега <img>: подставляет эмодзи вместо битой/недоступной картинки
 function handleProductImgError(imgEl) {
     imgEl.onerror = null;
     const emoji = imgEl.dataset.emoji || '🍽️';
@@ -2186,7 +2367,6 @@ function getProductImageHTML(product) {
         const safeUrl = escapeAttr(url);
         const safeAlt = escapeAttr(product.name || '');
         const safeEmoji = escapeAttr(product.emoji || '🍽️');
-        // Картинка видна сразу (без opacity:0/ожидания onload) — текст и цена карточки не зависят от её загрузки
         return `<img src="${safeUrl}" alt="${safeAlt}" data-emoji="${safeEmoji}" loading="lazy" decoding="async" onerror="handleProductImgError(this)">`;
     } else {
         return product.emoji || '🍽️';
@@ -2243,11 +2423,9 @@ function loadSelectedPayment() {
     } else {
         selectedPayment = 'cash';
     }
-    // Обновить активные классы в корзине
     document.querySelectorAll('.payment-option').forEach(opt => {
         opt.classList.toggle('active', opt.dataset.payment === selectedPayment);
     });
-    // Обновить активные классы на странице способов оплаты
     document.querySelectorAll('.payment-card').forEach(card => {
         const method = card.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
         if (method === selectedPayment) {
@@ -2301,7 +2479,7 @@ function handleProfilePhotoUpload(event) {
         avatar.innerHTML = `<img src="${base64}" class="profile-avatar-img" alt="Profile">`;
         avatar.style.background = 'none';
         localStorage.setItem('profilePhoto', base64);
-        showToast('📸 Фото обновлено');
+        showToast(t('photo_updated'));
     };
     reader.readAsDataURL(file);
 }
@@ -2323,7 +2501,7 @@ function startEditName() {
             nameDisplay.textContent = newName;
             localStorage.setItem('profileName', newName);
             updateCheckoutFormFromProfile();
-            showToast('👤 Имя сохранено');
+            showToast(t('name_saved'));
         }
         container.innerHTML = `<h2 id="profileNameDisplay">${newName || currentName}</h2><button class="profile-name-edit" onclick="startEditName()">✏️</button>`;
     };
@@ -2350,7 +2528,7 @@ function startEditPhone() {
             phoneDisplay.textContent = newPhone;
             localStorage.setItem('profilePhone', newPhone);
             updateCheckoutFormFromProfile();
-            showToast('📞 Номер сохранён');
+            showToast(t('phone_saved'));
         }
         container.innerHTML = `<p id="profilePhoneDisplay">${newPhone || currentPhone}</p><button class="profile-phone-edit" onclick="startEditPhone()">✏️</button>`;
     };
@@ -2383,11 +2561,8 @@ function navigateTo(page) {
 // ========== ТЕМА ==========
 function setTheme(theme) {
     document.body.classList.toggle('light-theme', theme === 'light');
-    document.querySelectorAll('.theme-option').forEach(btn => {
-        btn.classList.toggle('active', 
-            (theme === 'dark' && btn.textContent.includes('Тёмная')) ||
-            (theme === 'light' && btn.textContent.includes('Светлая'))
-        );
+    document.querySelectorAll('.theme-option[data-theme]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === theme);
     });
     localStorage.setItem('theme', theme);
 }
@@ -2472,7 +2647,6 @@ function selectPayment(element, method) {
     element.classList.add('active');
     selectedPayment = method;
     saveSelectedPayment();
-    // Синхронизация с корзиной
     document.querySelectorAll('.payment-option').forEach(opt => {
         opt.classList.toggle('active', opt.dataset.payment === method);
     });
@@ -2533,7 +2707,6 @@ function renderOrderSuccessPage() {
 }
 
 function sendToWhatsApp() {
-    // helper to build message moved below
     const message = getOrderTextMessage();
     const url = `https://wa.me/79877423172?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
@@ -2560,7 +2733,6 @@ function getOrderTextMessage() {
 function sendToTelegram() {
     if (!currentOrder) return;
     let message = getOrderTextMessage();
-    // Ссылка на Telegram (используется номер телефона в пути)
     const url = `https://t.me/+79535555335?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
     showToast('📱 Telegram открыт');
@@ -2569,7 +2741,6 @@ function sendToTelegram() {
 function sendToMAX() {
     if (!currentOrder) return;
     let message = getOrderTextMessage();
-    // Ссылка на MAX, привязана к номеру +79877423172
     const url = `https://max.ru/send?number=+79877423172&text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
     showToast('💬 Мессенджер MAX открыт');
@@ -2707,10 +2878,7 @@ function saveProduct() {
 
 // ========== СОХРАНЕНИЕ ТОВАРОВ (ЛОКАЛЬНО + FIRESTORE) ==========
 function saveProducts() {
-    // 1. Локальное сохранение
     localStorage.setItem('products', JSON.stringify(products));
-    
-    // 2. Отправка в облако (если Firebase доступен)
     if (db) {
         db.collection("shopData").doc("catalog").set({
             items: products,
@@ -2760,7 +2928,7 @@ function clearCart() {
 function renderCartPage() {
     const container = document.getElementById('cartItemsList');
     if (cart.length === 0) {
-        container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">🛒 Корзина пуста</div>`;
+        container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">${t('cart_empty')}</div>`;
         document.getElementById('subtotalAmount').textContent = '0 ₽';
         document.getElementById('totalAmount').textContent = '0 ₽';
         document.getElementById('checkoutBtn').disabled = true;
@@ -2795,14 +2963,14 @@ function toggleFavorite(productId, event) {
     localStorage.setItem('favorites', JSON.stringify(favorites));
     renderProducts();
     if (document.getElementById('favoritesPage').classList.contains('active')) renderFavoritesPage();
-    showToast(index > -1 ? '💔 Удалено' : '❤️ Добавлено');
+    showToast(index > -1 ? t('removed_from_fav') : t('added_to_fav'));
 }
 
 function renderFavoritesPage() {
     const favProducts = getAllProducts().filter(p => favorites.includes(p.id));
     const grid = document.getElementById('favoritesGrid');
     if (favProducts.length === 0) {
-        grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted);">❤️ Добавьте любимые блюда</div>`;
+        grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted);">${t('no_favorites')}</div>`;
         return;
     }
     grid.innerHTML = favProducts.map(p => `
@@ -2826,12 +2994,15 @@ function renderFavoritesPage() {
 
 // ========== ТОВАРЫ ==========
 function renderCategories() {
-    document.getElementById('categoriesScroll').innerHTML = categories.map(cat => `
+    document.getElementById('categoriesScroll').innerHTML = categories.map(cat => {
+        const label = (currentLang === 'tg' && cat.nameTg) ? cat.nameTg : cat.name;
+        return `
         <div class="cat-item ${activeCategory === cat.id ? 'active' : ''}" onclick="setCategory('${cat.id}')">
             <div class="cat-emoji">${cat.emoji}</div>
-            <span class="cat-name">${cat.name}</span>
+            <span class="cat-name">${label}</span>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function setCategory(catId) {
@@ -2849,8 +3020,6 @@ function shuffleArray(arr) {
     return result;
 }
 
-// Строит порядок карточек для категории "Все": случайное перемешивание внутри
-// каждого типа + аккуратное чередование кафе/магазин, зафиксированное на время загрузки страницы
 function buildMixedOrder(sourceProducts) {
     const cafeItems = shuffleArray(sourceProducts.filter(p => p.type === 'cafe'));
     const marketItems = shuffleArray(sourceProducts.filter(p => p.type === 'market'));
@@ -2869,12 +3038,10 @@ function buildMixedOrder(sourceProducts) {
 
 function getMixedProducts(filtered) {
     const byId = new Map(filtered.map(p => [p.id, p]));
-    // Первая генерация за эту загрузку страницы — случайный порядок
     if (mixedDisplayOrder.length === 0) {
         mixedDisplayOrder = buildMixedOrder(filtered);
     }
     let ordered = mixedDisplayOrder.map(id => byId.get(id)).filter(Boolean);
-    // Товары, добавленные админом уже после генерации порядка — дописываем в конец
     const knownIds = new Set(mixedDisplayOrder);
     const newOnes = filtered.filter(p => !knownIds.has(p.id));
     if (newOnes.length) {
@@ -2885,7 +3052,6 @@ function getMixedProducts(filtered) {
 }
 
 function renderProducts() {
-    // 1. Фильтрация по режиму, категории и поиску
     let filtered = getAllProducts().filter(p => {
         if (activeMode === 'cafe' && p.type !== 'cafe') return false;
         if (activeMode === 'market' && p.type !== 'market') return false;
@@ -2894,9 +3060,7 @@ function renderProducts() {
         return true;
     });
 
-    // Если поиск или выбрана конкретная категория – выводим как есть (без чередования)
     const needMixed = (activeMode === 'all' && activeCategory === 'all' && searchQuery === '');
-    // Магазин, вкладка "Все" — перемешиваем случайно при каждом рендере (загрузка/переключение)
     const needMarketShuffle = (activeMode === 'market' && activeCategory === 'all' && searchQuery === '');
 
     let finalProducts = [];
@@ -2906,8 +3070,6 @@ function renderProducts() {
     } else if (needMarketShuffle) {
         finalProducts = shuffleArray(filtered);
     } else {
-        // Обычная сортировка (например, при режиме только кафе или только магазин)
-        // Сортируем так же, как раньше
         filtered.sort((a, b) => {
             if (a.type === 'cafe' && b.type === 'market') return -1;
             if (a.type === 'market' && b.type === 'cafe') return 1;
@@ -2925,7 +3087,7 @@ function renderProducts() {
 
     const grid = document.getElementById('productsGrid');
     if (finalProducts.length === 0) {
-        grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted);">🍽️ Ничего не найдено</div>`;
+        grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted);">${t('not_found')}</div>`;
         return;
     }
 
@@ -2980,6 +3142,9 @@ function showToast(message) {
 
 // ========== ИНИЦИАЛИЗАЦИЯ ==========
 document.addEventListener('DOMContentLoaded', () => {
+    // Язык
+    applyLanguage();
+
     const savedTheme = localStorage.getItem('theme') || 'dark';
     setTheme(savedTheme);
     loadProfileData();
@@ -2989,7 +3154,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAddressDisplay();
     updateCheckoutFormFromProfile();
 
-    // Загружаем сохранённый способ оплаты
     loadSelectedPayment();
 
     document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -3012,7 +3176,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.classList.add('active');
             selectedPayment = this.dataset.payment;
             saveSelectedPayment();
-            // Синхронизация со страницей способов оплаты
             document.querySelectorAll('.payment-card').forEach(card => {
                 const method = card.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
                 if (method === selectedPayment) {
