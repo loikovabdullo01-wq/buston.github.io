@@ -2740,8 +2740,16 @@ function sendToTelegram() {
 
 function sendToMAX() {
     if (!currentOrder) return;
+    
     let message = getOrderTextMessage();
-    const url = `https://max.ru/send?number=+79877423172&text=${encodeURIComponent(message)}`;
+    
+    // Новый номер телефона в международном формате без знака +
+    const phone = "79535555335";
+    const startappParam = `to=${phone}&text=${encodeURIComponent(message)}`;
+    
+    // Формируем корректную ссылку через официального бота @send
+    const url = `https://max.ru{encodeURIComponent(startappParam)}`;
+    
     window.open(url, '_blank');
     showToast('💬 Мессенджер MAX открыт');
 }
