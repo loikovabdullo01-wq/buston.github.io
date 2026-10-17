@@ -2737,23 +2737,44 @@ function sendToTelegram() {
     window.open(url, '_blank');
     showToast('📱 Telegram открыт');
 }
+// Ссылка на профиль магазина в MAX: открой MAX → Профиль → Поделиться ссылкой
+// и вставь сюда, например "https://max.ru/u/f9LHod...". Пока пусто — сработает :share
+const MAX_PROFILE_URL = "";
+
+function copyToClipboard(text) {
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+        }
+    } catch (e) {}
+    // запасной вариант для WebView
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+}
 
 function sendToMAX() {
     if (!currentOrder) return;
-    
-    let message = getOrderTextMessage();
-    
-    // Новый номер телефона в международном формате без знака +
-    const phone = "79535555335";
-    const startappParam = `to=${phone}&text=${encodeURIComponent(message)}`;
-    
-    // Формируем корректную ссылку через официального бота @send
-    const url = `https://max.ru{encodeURIComponent(startappParam)}`;
-    
-    window.open(url, '_blank');
-    showToast('💬 Мессенджер MAX открыт');
-}
 
+    const message = getOrderTextMessage();
+    copyToClipboard(message);
+
+    let url;
+    if (MAX_PROFILE_URL) {
+        url = MAX_PROFILE_URL;
+        showToast('📋 Заказ скопирован. Вставьте его в чат MAX и отправьте');
+    } else {
+        url = `https://max.ru/:share?text=${encodeURIComponent(message)}`;
+        showToast('💬 Выберите чат магазина в MAX и отправьте');
+    }
+
+    window.open(url, '_blank');
+}
 
 // ========== АДМИНКА ==========
 function showPinModal() {
