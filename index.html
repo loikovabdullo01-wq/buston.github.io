@@ -1921,18 +1921,22 @@ function setLanguage(lang) {
 
 // ============ СКАЧИВАНИЕ APK ============
 function downloadApk() {
-    if (!APK_DOWNLOAD_URL || APK_DOWNLOAD_URL === '#') {
+    const url = 'busston-market.apk'; // <-- ВСТАВЬТЕ СЮДА ВАШУ ССЫЛКУ В КАВЫЧКАХ
+
+    if (!url || url === '#') {
         showToast(t('apk_soon'));
         return;
     }
+
     const a = document.createElement('a');
-    a.href = APK_DOWNLOAD_URL;
+    a.href = url;
     a.download = 'BUSTON.apk';
     a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
 }
+
 
 
 // ============ ДАННЫЕ (начальная загрузка из localStorage) ============
