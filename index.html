@@ -1377,7 +1377,7 @@ body {
     box-shadow: var(--shadow-md);
 }
     </style>
-    <!-- Firebase SDK (добавлено для слушателя цен) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <!-- ImgBB виджет загрузки изображений -->
@@ -1546,7 +1546,7 @@ body {
                 <div class="success-title">заказ готов ! жмите "отправить в whatsApp" для подтверждения</div>
                 <div class="success-text" id="successOrderNumber">Заказ #BUSTON-001</div>
                 <div class="success-order-details" id="successOrderDetails"></div>
-                <p style="color: var(--text-secondary); margin: 20px 0;">Мы отправиv детали заказа в WhatsApp</p>
+                <p style="color: var(--text-secondary); margin: 20px 0;">Мы отправим детали заказа в WhatsApp</p>
                 <span style="color: var(--accent-red); font-size: 0.9em;">
                 ⚠️ Перед отправкой убедитесь, что у вас включён VPN ⚠️
             </span>
@@ -1759,6 +1759,25 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
 
 const db = (typeof firebase !== 'undefined') ? firebase.firestore() : null;
 
+// ============ ПУТЬ К КАТАЛОГУ В FIRESTORE ============
+// Реальная структура:
+//   shopData (root collection)
+//     └─ catalog (document)
+//          └─ catalog (subcollection)
+//               └─ {ИМЯ_ДОКУМЕНТА} (document)
+//                    └─ items: [ { category, desc, emoji, id, img, name, price, type }, ... ]
+const CATALOG_ROOT = 'shopData';
+const CATALOG_PARENT_DOC = 'catalog';
+const CATALOG_SUBCOLLECTION = 'catalog';
+
+// Имя конечного документа внутри подколлекции "catalog".
+// Если вы знаете точное имя — впишите его сюда, это ускорит работу.
+// Если нет — оставьте "ИМЯ_ДОКУМЕНТА": код автоматически определит
+// первый существующий документ подколлекции при чтении.
+const CATALOG_SUB_DOC = 'ИМЯ_ДОКУМЕНТА';
+
+// Кэш для определения реального имени документа (заполняется при первом onSnapshot)
+let catalogSubDocIdResolved = null;
 
 // ============ ПЕРЕВОДЫ (i18n) ============
 const translations = {
@@ -1897,12 +1916,10 @@ function applyLanguage() {
         const val = t(key);
         if (val !== undefined && val !== null) el.placeholder = val;
     });
-    // Кнопки языка в профиле — активная подсветка
     const ruBtn = document.getElementById('profileLangRuBtn');
     const tgBtn = document.getElementById('profileLangTgBtn');
     if (ruBtn) ruBtn.classList.toggle('active', currentLang === 'ru');
     if (tgBtn) tgBtn.classList.toggle('active', currentLang === 'tg');
-    // lang атрибут html
     document.documentElement.lang = currentLang;
 }
 
@@ -1918,8 +1935,6 @@ function setLanguage(lang) {
     if (document.getElementById('addressesPage')?.classList.contains('active') && typeof renderAddressesPage === 'function') renderAddressesPage();
     if (typeof updateAddressDisplay === 'function') updateAddressDisplay();
 }
-
-// ============ СКАЧИВАНИЕ APK ============
 
 // ============ СКАЧИВАНИЕ APK ============
 function downloadApk() {
@@ -1939,7 +1954,6 @@ function downloadApk() {
     document.body.removeChild(a);
 }
 
-
 // ============ ДАННЫЕ (начальная загрузка из localStorage) ============
 let products = JSON.parse(localStorage.getItem('products')) || [
 
@@ -1948,21 +1962,18 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     { id: 2, name: 'Люля-кебаб', desc: '1 шт · говядина', price: 200, type: 'cafe', category: 'shashlik', img: "Люля-кебаб.webp", emoji: '🍡' },
     { id: 3, name: 'Манты', desc: '350г · 5 шт', price: 300, type: 'cafe', category: 'dish', img: "манты.jpg", emoji: '🍜' },
     { id: 4, name: 'Плов с говядины', desc: '450г · с нутом', price: 300, type: 'cafe', category: 'dish', img: "333.webp", emoji: '🍚' },
-   
-    
+
     { id: 45, name: 'RC colla 05', desc: '0.5л · черный', price: 100, type: 'cafe', category: 'drinks', img: "арс.webp", emoji: '🥤' },
     { id: 46, name: 'RC colla 05', desc: '0.5л · яблоко', price: 100, type: 'cafe', category: 'drinks', img: "арсс.jpg", emoji: '🥤' },
-    
+
     { id: 12, name: 'Рис Девзира', desc: '800г · для плова', price: 125, type: 'market', category: 'grocery', img: "рис.jpg", emoji: '🍚' },
 
-   
-    
-    // --- НОВЫЕ БЛЮДА / КАФЕ (ранее добавленные) ---
+    // --- НОВЫЕ БЛЮДА / КАФЕ ---
     { id: 20, name: 'Шурпа из баранины', desc: 'порция', price: 350, type: 'cafe', category: 'dish', img: "shurpa.jpg", emoji: '🍲' },
     { id: 21, name: 'Мастава', desc: 'порция', price: 350, type: 'cafe', category: 'dish', img: "маст.webp", emoji: '🥣' },
     { id: 22, name: 'Манты с бульоном', desc: '5 шт', price: 350, type: 'cafe', category: 'dish', img: "мантыбул.jpg", emoji: '🥟' },
     { id: 23, name: 'Суп Лагман', desc: 'порция', price: 350, type: 'cafe', category: 'dish', img: "лагман.jpg", emoji: '🍜' },
-    
+
     { id: 25, name: 'Лагман жареный', desc: 'порция', price: 350, type: 'cafe', category: 'dish', img: "lagzar.webp", emoji: '🍝' },
     { id: 26, name: 'Манты жареные', desc: '5 шт', price: 350, type: 'cafe', category: 'dish', img: "mant.jpg", emoji: '🍘' },
     { id: 1, name: 'Жиз баранина с костями', desc: 'порция', price: 700, type: 'cafe', category: 'dish', img: "jiz.jpg", emoji: '🍖' },
@@ -1974,7 +1985,7 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     { id: 33, name: 'Куриное филе', desc: '200г', price: 350, type: 'cafe', category: 'shashlik', img: 'curl.jpg', emoji: '🍗' },
     { id: 34, name: 'Крылышки', desc: '6 шт', price: 350, type: 'cafe', category: 'shashlik', img: 'cril.jpg', emoji: '🍗' },
     { id: 35, name: 'Нарезка', desc: 'мясная', price: 250, type: 'cafe', category: 'shashlik', img: 'narez.png', emoji: '🍖' },
-    
+
     { id: 38, name: 'Самса с говядиной', desc: '1 шт', price: 150, type: 'cafe', category: 'bakery', img: '444.png', emoji: '🥟' },
     { id: 39, name: 'Самса с бараниной', desc: '1 шт', price: 170, type: 'cafe', category: 'bakery', img: 'sambar.webp', emoji: '🥟' },
     { id: 40, name: 'Фатир', desc: '1 шт', price: 200, type: 'cafe', category: 'bakery', img: 'fatir.webp', emoji: '🥖' },
@@ -1984,7 +1995,7 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     { id: 42, name: 'Чай с лимоном', desc: 'чайник', price: 100, type: 'cafe', category: 'drinks', img: "jaylimon.jpg", emoji: '🍋' },
     { id: 43, name: 'Чай с чабрецом', desc: 'чайник', price: 100, type: 'cafe', category: 'drinks', img: "jay.jpg", emoji: '🌿' },
     { id: 44, name: 'Компот', desc: '0.3л', price: 100, type: 'cafe', category: 'drinks', img: "compot.webp", emoji: '🥤' },
-    
+
     // Комбо-сеты
     { id: 47, name: 'Шурпа из говядины + Нон + Чай', desc: 'комбо', price: 400, type: 'cafe', category: 'set', img: 'гов.png', emoji: '🍱' },
     { id: 48, name: 'Шурпа из баранины + Нон + Чай', desc: 'комбо', price: 450, type: 'cafe', category: 'set', img: 'гус.png', emoji: '🍱' },
@@ -2002,8 +2013,7 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     { id: 60, name: 'Шашлык из баранины + нон + чай', desc: 'комбо', price: 800, type: 'cafe', category: 'set', img: 'шшшшшшшшшшшшшшшшшшшшшш.jpg', emoji: '🍱' },
     { id: 61, name: 'Люля Кебаб + Нон + Чай + Салат', desc: 'комбо', price: 450, type: 'cafe', category: 'set', img: 'хххххххх.jpg', emoji: '🍱' },
     { id: 62, name: 'Куриное филе + Нон + Чай', desc: 'комбо', price: 250, type: 'cafe', category: 'set', img: 'лллл.jpg', emoji: '🍱' },
-    
-    
+
     // Соусы
     { id: 63, name: 'Аджика (острая)', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: 'аджика.jpg', emoji: '🌶️' },
     { id: 64, name: 'Сметанно-чесночный', desc: '30г', price: 50, type: 'cafe', category: 'sauces', img: 'smetan.jpg', emoji: '🧄' },
@@ -2012,7 +2022,7 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     { id: 67, name: 'Салат Оливье', desc: '200г', price: 150, type: 'cafe', category: 'sauces', img: 'salat.webp', emoji: '🥗' },
     { id: 68, name: 'Шакароб', desc: 'порция', price: 100, type: 'cafe', category: 'sauces', img: 'шакароб.jpg', emoji: '🥗' },
 
- // ========== БАКАЛЕЯ И МАСЛО (market / grocery) ==========
+ // ========== БАКАЛЕЯ И МАСЛО ==========
 { id: 900, name: 'Мука высший сорт', desc: '2 кг', price: 90, type: 'market', category: 'grocery', img: 'мука.jpg', emoji: '🌾' },
 { id: 901, name: 'Мука Чебоксарская (желтая)', desc: '2 кг', price: 140, type: 'market', category: 'grocery', img: 'muk.jpg', emoji: '🌾' },
 { id: 69, name: 'Мука Нижегородская (в/с)', desc: '2 кг', price: 100, type: 'market', category: 'grocery', img: 'mmm.webp', emoji: '🌾' },
@@ -2035,7 +2045,6 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 { id: 86, name: 'Шоколад', desc: 'плитка', price: 90, type: 'market', category: 'grocery', img: 'шок.webp', emoji: '🍫' },
 { id: 87, name: 'Приправа для плова', desc: 'пакет', price: 40, type: 'market', category: 'grocery', img: 'prip.webp', emoji: '🧂' },
 
-
 // Растительные масла
 { id: 701, name: 'Масло Щедрое Лето', desc: '5 л', price: 650, type: 'market', category: 'grocery', img: 'мас.jpg', emoji: '🌻' },
 { id: 702, name: 'Масло Олейна', desc: '5 л', price: 750, type: 'market', category: 'grocery', img: 'oll.png', emoji: '🌻' },
@@ -2051,9 +2060,7 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 { id: 712, name: 'Золотая Семечка', desc: '1 л', price: 145, type: 'market', category: 'grocery', img: 'zzz.png', emoji: '🌻' },
 { id: 713, name: 'Масло Злато', desc: '0.8 л', price: 120, type: 'market', category: 'grocery', img: '08.webp', emoji: '🌻' },
 
-    
 // 🧀 Молочка
-
 { id: 302, name: 'Молоко Северная Долина', desc: '1 л', price: 95, type: 'market', category: 'dairy', img: 'мол.webp', emoji: '🥛' },
 { id: 303, name: 'Молоко Городецкое', desc: '0.9 л', price: 90, type: 'market', category: 'dairy', img: 'молк.webp', emoji: '🥛' },
 { id: 304, name: 'Молоко Городецкое топленое', desc: '0.9 л', price: 95, type: 'market', category: 'dairy', img: 'mol.jpg', emoji: '🥛' },
@@ -2081,16 +2088,13 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 { id: 326, name: 'Масло сливочное', desc: '82.5% · 180г', price: 145, type: 'market', category: 'dairy', img: "масло.jpg", emoji: '🧈' },
 { id: 327, name: 'Молоко 3.2%', desc: '1л', price: 90, type: 'market', category: 'dairy', img: "молоко.webp", emoji: '🥛' },
 
-    
-    // 🍎 Овощи и фрукты
-// Фрукты и ягоды
+// 🍎 Овощи и фрукты
 { id: 601, name: 'Клубника', desc: '1 кг', price: 1000, type: 'market', category: 'vegetables', img: 'клубник.jpg', emoji: '🍓' },
 { id: 602, name: 'Яблоко зеленое', desc: '1 кг', price: 230, type: 'market', category: 'vegetables', img: 'яблокзел.webp', emoji: '🍏' },
 { id: 603, name: 'Яблоко красное', desc: '1 кг', price: 230, type: 'market', category: 'vegetables', img: 'appl.jpg', emoji: '🍎' },
 { id: 604, name: 'Апельсины большие', desc: '1 кг', price: 350, type: 'market', category: 'vegetables', img: 'apl.webp', emoji: '🍊' },
 { id: 605, name: 'Виноград красные', desc: 'упаковка', price: 300, type: 'market', category: 'vegetables', img: 'vin.avif', emoji: '🍇' },
 { id: 612, name: 'Виноград черные', desc: 'упаковка', price: 300, type: 'market', category: 'vegetables', img: 'виноградчер.jpg', emoji: '🍇' },
-
 { id: 606, name: 'Мандарины маленькие', desc: '1 кг', price: 250, type: 'market', category: 'vegetables', img: 'мандарин.jpg', emoji: '🍊' },
 { id: 607, name: 'Груша', desc: '1 кг', price: 330, type: 'market', category: 'vegetables', img: 'груша.jpg', emoji: '🍐' },
 { id: 608, name: 'Гранат большой', desc: '1 кг', price: 450, type: 'market', category: 'vegetables', img: 'гранат.webp', emoji: '🍎' },
@@ -2098,8 +2102,6 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 { id: 610, name: 'Киви', desc: '1 кг', price: 300, type: 'market', category: 'vegetables', img: 'киви.jpeg', emoji: '🥝' },
 { id: 611, name: 'Лимон', desc: '1 кг', price: 250, type: 'market', category: 'vegetables', img: 'limon.webp', emoji: '🍋' },
 
-
-// Овощи и зелень
 { id: 903, name: 'Огурцы', desc: '1 кг', price: 150, type: 'market', category: 'vegetables', img: 'огр.jpg', emoji: '🥒' },
 { id: 613, name: 'Помидоры обычные', desc: '1 кг', price: 150, type: 'market', category: 'vegetables', img: 'помидор.webp', emoji: '🍅' },
 { id: 614, name: 'Помидоры черри (маленькие)', desc: '1 кг', price: 150, type: 'market', category: 'vegetables', img: 'томат.jpg', emoji: '🍅' },
@@ -2118,30 +2120,26 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 { id: 627, name: 'Картофель', desc: '1 кг', price: 35, type: 'market', category: 'vegetables', img: 'kort.webp', emoji: '🥔' },
 { id: 628, name: 'Чеснок', desc: '1 кг', price: 350, type: 'market', category: 'vegetables', img: 'честнок.webp', emoji: '🧄' },
 
-    
-    // Напитки и вода
-    { id: 103, name: 'Вода газированная', desc: '1.5 л', price: 55, type: 'market', category: 'grocery', img: 'vodneg.webp', emoji: '💧' },
-    { id: 104, name: 'Вода без газа', desc: '5 л', price: 110, type: 'market', category: 'grocery', img: 'voda5.webp', emoji: '💧' },
-    { id: 105, name: 'Сок в ассортименте', desc: '1 л', price: 130, type: 'market', category: 'grocery', img: 'soc.webp', emoji: '🧃' },
-    { id: 106, name: 'Кока-кола', desc: '0.5 л', price: 85, type: 'market', category: 'grocery', img: 'kok.webp', emoji: '🥤' },
-    
-    // напитки холодильника
-  { id: 119, name: 'RC colla 1.5', desc: '1.5л · черный', price: 180, type: 'cafe', category: 'drinks', img: "rs1.png", emoji: '🥤' },
- { id: 120, name: 'RC colla 1.5', desc: '1.5л · яблоко', price: 180, type: 'cafe', category: 'drinks', img: "rssabz1.jpg", emoji: '🥤' },
- { id: 117, name: 'RC colla 1л', desc: '1л · черный', price: 150, type: 'cafe', category: 'drinks', img: "rs1.png", emoji: '🥤' },
- { id: 118, name: 'RC colla 1л', desc: '1л · яблоко', price: 150, type: 'cafe', category: 'drinks', img: "rs1sabzz.jpg", emoji: '🥤' },
- { id: 124, name: 'Кола добрый 05', desc: '05 · яблоко', price: 100, type: 'cafe', category: 'drinks', img: "добрый05.jpg", emoji: '🥤' },
- { id: 121, name: 'Coca-Cola', desc: '1.5 л', price: 120, type: 'market', category: 'drinks', img: 'кокакола.jpg', emoji: '🥤' },
+// Напитки и вода
+{ id: 103, name: 'Вода газированная', desc: '1.5 л', price: 55, type: 'market', category: 'grocery', img: 'vodneg.webp', emoji: '💧' },
+{ id: 104, name: 'Вода без газа', desc: '5 л', price: 110, type: 'market', category: 'grocery', img: 'voda5.webp', emoji: '💧' },
+{ id: 105, name: 'Сок в ассортименте', desc: '1 л', price: 130, type: 'market', category: 'grocery', img: 'soc.webp', emoji: '🧃' },
+{ id: 106, name: 'Кока-кола', desc: '0.5 л', price: 85, type: 'market', category: 'grocery', img: 'kok.webp', emoji: '🥤' },
+
+{ id: 119, name: 'RC colla 1.5', desc: '1.5л · черный', price: 180, type: 'cafe', category: 'drinks', img: "rs1.png", emoji: '🥤' },
+{ id: 120, name: 'RC colla 1.5', desc: '1.5л · яблоко', price: 180, type: 'cafe', category: 'drinks', img: "rssabz1.jpg", emoji: '🥤' },
+{ id: 117, name: 'RC colla 1л', desc: '1л · черный', price: 150, type: 'cafe', category: 'drinks', img: "rs1.png", emoji: '🥤' },
+{ id: 118, name: 'RC colla 1л', desc: '1л · яблоко', price: 150, type: 'cafe', category: 'drinks', img: "rs1sabzz.jpg", emoji: '🥤' },
+{ id: 124, name: 'Кола добрый 05', desc: '05 · яблоко', price: 100, type: 'cafe', category: 'drinks', img: "добрый05.jpg", emoji: '🥤' },
+{ id: 121, name: 'Coca-Cola', desc: '1.5 л', price: 120, type: 'market', category: 'drinks', img: 'кокакола.jpg', emoji: '🥤' },
 { id: 122, name: 'Пепси', desc: '1.5 л', price: 110, type: 'market', category: 'drinks', img: 'пепси.jpg', emoji: '🥤' },
 { id: 123, name: 'Fanta', desc: '1.5 л', price: 120, type: 'market', category: 'drinks', img: 'фант.webp', emoji: '🍊' },
-
 
 // 🥩 Мясо и колбасы
 { id: 201, name: 'Сосиски', desc: 'упаковка', price: 350, type: 'market', category: 'meat', img: 'SASOSKA..jpg', emoji: '🌭' },
 { id: 202, name: 'Колбаса варёная', desc: '1 кг', price: 450, type: 'market', category: 'meat', img: 'ssssre3.jpg', emoji: '🍖' },
 { id: 203, name: 'Колбаса копчёная', desc: '1 кг', price: 550, type: 'market', category: 'meat', img: 'kapchoni.jpg', emoji: '🥓' },
 
-// Говядина
 { id: 204, name: 'Говядина на кости', desc: '1 кг', price: 670, type: 'market', category: 'meat', img: 'gysht.jpg', emoji: '🥩' },
 { id: 205, name: 'Говяжья спина', desc: '1 кг', price: 720, type: 'market', category: 'meat', img: 'гущщщт.jpg', emoji: '🥩' },
 { id: 206, name: 'Говядина мякоть', desc: '1 кг', price: 900, type: 'market', category: 'meat', img: 'orig.webp', emoji: '🥩' },
@@ -2149,11 +2147,9 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 { id: 208, name: 'Сердце говяжье', desc: '1 кг', price: 450, type: 'market', category: 'meat', img: 'дили гов.jpg', emoji: '🫀' },
 { id: 209, name: 'Печень говяжья', desc: '1 кг', price: 450, type: 'market', category: 'meat', img: 'jigar.jpg', emoji: '🥩' },
 
-// Баранина
 { id: 210, name: 'Баранина', desc: '1 кг', price: 900, type: 'market', category: 'meat', img: 'bar.webp', emoji: '🍖' },
 { id: 211, name: 'Спина баранины', desc: '1 кг', price: 1100, type: 'market', category: 'meat', img: 'abvg.jpg', emoji: '🍖' },
 { id: 212, name: 'Курдюк бараний', desc: '1 кг', price: 900, type: 'market', category: 'meat', img: 'dmbay gyspand.jpg', emoji: '🥩' },
-// Курица
 { id: 213, name: 'Куриные окорочка', desc: 'упаковка (1 кг)', price: 400, type: 'market', category: 'meat', img: 'vay.jpg', emoji: '🍗' },
 { id: 214, name: 'Бедро куриное', desc: '1 кг', price: 450, type: 'market', category: 'meat', img: 'mnnnn+.jpg', emoji: '🍗' },
 { id: 215, name: 'Тушка куриная', desc: '1 кг', price: 270, type: 'market', category: 'meat', img: 'tush.webp', emoji: '🐔' },
@@ -2161,7 +2157,6 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 { id: 216, name: 'Куриные крылышки', desc: '1 кг', price: 300, type: 'market', category: 'meat', img: 'mrg.jpg', emoji: '💸' },
 { id: 217, name: 'Куриные ножки', desc: '1 кг', price: 300, type: 'market', category: 'meat', img: 'бирав пп.jpg', emoji: '🍗' },
 { id: 218, name: 'Филе куриное', desc: '1 кг', price: 450, type: 'market', category: 'meat', img: 'binsh.jpg', emoji: '🥩' },
-
 
 // 🍫 Сладости
 { id: 401, name: 'Торт Наполеон', desc: '1 шт', price: 250, type: 'market', category: 'sweets', img: 'tortn-napoleon.jpg', emoji: '🍰' },
@@ -2194,23 +2189,38 @@ let products = JSON.parse(localStorage.getItem('products')) || [
 { id: 904, name: 'Чипсы', desc: 'пачка', price: 150, type: 'market', category: 'snacks', img: 'ch.jpg', emoji: '🍟' },
 { id: 905, name: 'Сухарики', desc: 'пачка', price: 90, type: 'market', category: 'snacks', img: 's.webp', emoji: '🥨' },
 
-
 // ⚡ Энергетики
 { id: 906, name: 'Энергетик Gorilla', desc: '0.5 л', price: 100, type: 'market', category: 'energy', img: 'gor.webp', emoji: '⚡' },
 { id: 907, name: 'Burn', desc: '0.5 л', price: 110, type: 'market', category: 'energy', img: 'burn.png', emoji: '⚡' },
 { id: 908, name: 'Drive Me Ягоды', desc: '0.449 л', price: 110, type: 'market', category: 'energy', img: 'ьь.webp', emoji: '🔴' },
 { id: 909, name: 'Adrenaline Rush', desc: '0.449 л', price: 170, type: 'market', category: 'energy', img: '123.jpg', emoji: '🔥' },
 
-
     // Хозтовары и мелочи
     { id: 107, name: 'Спички', desc: 'упаковка', price: 30, type: 'market', category: 'grocery', img: 'спичка.jpg', emoji: '🔥' },
     { id: 108, name: 'Салфетки бумажные', desc: 'пачка', price: 45, type: 'market', category: 'grocery', img: 'salf.webp', emoji: '🧻' },
     { id: 109, name: 'Мыло', desc: '1 шт', price: 60, type: 'market', category: 'grocery', img: 'мыло.webp', emoji: '🧼' },
-    
-    
 ];
 
+// ========== НОРМАЛИЗАЦИЯ ТОВАРА ==========
+// Приводит любой формат к единому виду. Именно тут img из Firestore
+// попадает в итоговое поле `img` (которое используется в <img src>).
+function normalizeProduct(item) {
+    return {
+        id: item.id,
+        name: item.name || '',
+        desc: item.desc || '',
+        price: Number(item.price) || 0,
+        type: item.type || 'cafe',
+        category: item.category || 'dish',
+        emoji: item.emoji || '🍽️',
+        img: item.img || item.image || item.imageUrl || item.photo || item.photoURL || ''
+    };
+}
+
 // ========== ПОДПИСКА НА КАТАЛОГ В FIRESTORE (REALTIME) ==========
+// Читаем ВСЮ подколлекцию shopData/catalog/catalog — это защищает от того,
+// что имя конечного документа может быть неизвестно.
+// Если в подколлекции несколько документов — склеиваем items из всех.
 let lastCatalogJSON = null;
 let renderProductsScheduled = false;
 
@@ -2224,68 +2234,52 @@ function scheduleRenderProducts() {
 }
 
 if (db) {
-    db.collection("shopData").doc("catalog").onSnapshot((doc) => {
-        if (doc.exists) {
-            const data = doc.data();
-            if (data && Array.isArray(data.items)) {
-                const incomingJSON = JSON.stringify(data.items);
-                if (incomingJSON === lastCatalogJSON) return;
-                lastCatalogJSON = incomingJSON;
-                console.log("🔄 Получены свежие данные каталога из Firebase");
-                products = data.items;
-                localStorage.setItem('products', JSON.stringify(products));
-                scheduleRenderProducts();
-            }
-        } else {
-            console.log("📤 Документ catalog не найден, создаём с текущими товарами");
-            db.collection("shopData").doc("catalog").set({
-                items: products,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).catch(err => console.error("Ошибка первичной записи каталога:", err));
-        }
-  }, (err) => {
-    console.error("❌ Ошибка слушателя каталога Firestore:", err);
-});
+    db.collection(CATALOG_ROOT)
+      .doc(CATALOG_PARENT_DOC)
+      .collection(CATALOG_SUBCOLLECTION)
+      .onSnapshot((snapshot) => {
+          if (snapshot.empty) {
+              console.log(`📤 Подколлекция ${CATALOG_ROOT}/${CATALOG_PARENT_DOC}/${CATALOG_SUBCOLLECTION} пуста. Используем локальные товары.`);
+              return;
+          }
+          // Запоминаем первое имя документа для записи обратно
+          catalogSubDocIdResolved = snapshot.docs[0].id;
 
+          const allItems = [];
+          snapshot.forEach((docSnap) => {
+              const data = docSnap.data();
+              if (data && Array.isArray(data.items)) {
+                  allItems.push(...data.items);
+              }
+          });
+
+          if (allItems.length === 0) {
+              console.warn('⚠️ В документах подколлекции нет массива "items" или он пуст.');
+              return;
+          }
+
+          const normalized = allItems.map(normalizeProduct);
+          const incomingJSON = JSON.stringify(normalized);
+          if (incomingJSON === lastCatalogJSON) return;
+          lastCatalogJSON = incomingJSON;
+
+          console.log(`🔄 Получено ${normalized.length} товаров из Firestore (${CATALOG_ROOT}/${CATALOG_PARENT_DOC}/${CATALOG_SUBCOLLECTION}/${catalogSubDocIdResolved})`);
+
+          products = normalized;
+          localStorage.setItem('products', JSON.stringify(products));
+          scheduleRenderProducts();
+      }, (err) => {
+          console.error(`❌ Ошибка слушателя каталога ${CATALOG_ROOT}/${CATALOG_PARENT_DOC}/${CATALOG_SUBCOLLECTION}:`, err);
+      });
 }
 
-// ========== ПОДПИСКА НА КОЛЛЕКЦИЮ 'products' (АДМИНКА admin.html) ==========
-let firestoreProducts = [];
-let lastFirestoreProductsJSON = null;
-
+// ========== ВСЕ ТОВАРЫ ==========
+// Оставлено как алиас, чтобы не менять вызовы в остальном коде.
 function getAllProducts() {
-    return products.concat(firestoreProducts);
-}
-
-if (db) {
-    db.collection("products").onSnapshot((snapshot) => {
-        const incoming = snapshot.docs.map((docSnap) => {
-            const data = docSnap.data();
-            return {
-                id: docSnap.id,
-                name: data.name || '',
-                desc: data.desc || '',
-                price: Number(data.price) || 0,
-                type: data.type || 'market',
-                category: data.category || 'other',
-                emoji: data.emoji || '🍽️',
-                img: data.image || data.img || data.imageUrl || data.photo || data.photoURL || '',
-                __fromCollection: true
-            };
-        });
-        const incomingJSON = JSON.stringify(incoming);
-        if (incomingJSON === lastFirestoreProductsJSON) return;
-        lastFirestoreProductsJSON = incomingJSON;
-        firestoreProducts = incoming;
-        console.log(`🔄 Получено ${firestoreProducts.length} товар(ов) из коллекции 'products'`);
-        scheduleRenderProducts();
-    }, (err) => {
-        console.error("❌ Ошибка слушателя коллекции 'products':", err);
-    });
+    return products;
 }
 
 const categories = [
-    // --- КАФЕ ---
     { id: 'all', name: 'Все', nameTg: 'Ҳама', emoji: '🍽️' },
     { id: 'shashlik', name: 'Шашлык', nameTg: 'Кабоб', emoji: '🍢' },
     { id: 'dish', name: 'Блюда', nameTg: 'Хӯрокҳо', emoji: '🍜' },
@@ -2293,8 +2287,6 @@ const categories = [
     { id: 'drinks', name: 'Напитки', nameTg: 'Нӯшокиҳо', emoji: '🥤' },
     { id: 'sauces', name: 'Соус - Салат', nameTg: 'Соус - Салат', emoji: '🍶' },
     { id: 'set', name: 'Комбо', nameTg: 'Комбо', emoji: '🍱' },
-
-    // --- МАГАЗИН ---
     { id: 'grocery', name: 'Бакалея', nameTg: 'Баққолӣ', emoji: '🛒' },
     { id: 'meat', name: 'Мясо и колбасы', nameTg: 'Гӯшт ва ҳасиб', emoji: '🥩' },
     { id: 'dairy', name: 'Молочка', nameTg: 'Ширӣ', emoji: '🥛' },
@@ -2305,8 +2297,6 @@ const categories = [
     { id: 'water', name: 'Вода', nameTg: 'Об', emoji: '💧' },
     { id: 'energy', name: 'Энергетики', nameTg: 'Энергетикҳо', emoji: '⚡' }
 ];
-
-
 
 const ADMIN_PIN = '0880';
 const OWNER_PHONE = '79385401876';
@@ -2355,10 +2345,13 @@ function escapeAttr(str) {
 }
 
 function getProductImageURL(product) {
+    // ВАЖНО: в базе поле называется "img" (например, "99.jpg").
+    // Fallback на старые имена оставлен для совместимости.
     return product.img || product.image || product.imageUrl || product.photo || product.photoURL || '';
 }
 
 function handleProductImgError(imgEl) {
+    console.warn('⚠️ Не удалось загрузить картинку:', imgEl.src, '→ показываю emoji-заглушку');
     imgEl.onerror = null;
     const emoji = imgEl.dataset.emoji || '🍽️';
     if (imgEl.parentElement) {
@@ -2689,7 +2682,7 @@ function renderOrderSuccessPage() {
         return;
     }
     document.getElementById('successOrderNumber').textContent = `Заказ #${currentOrder.number}`;
-    const itemsHtml = currentOrder.items.map(i => 
+    const itemsHtml = currentOrder.items.map(i =>
         `<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
             <span>${i.emoji || '🍽️'} ${i.name} x${i.quantity}</span>
             <span>${i.price * i.quantity} ₽</span>
@@ -2742,8 +2735,7 @@ function sendToTelegram() {
     window.open(url, '_blank');
     showToast('📱 Telegram открыт');
 }
-// Ссылка на профиль магазина в MAX: открой MAX → Профиль → Поделиться ссылкой
-// и вставь сюда, например "https://max.ru/u/f9LHod...". Пока пусто — сработает :share
+
 const MAX_PROFILE_URL = "https://max.ru/u/f9LHodD0cOKJe4ezycHG0FMBeq2Ufo1iUi9U4FfxxawdYkirEyhZso4bO7Y";
 
 function copyToClipboard(text) {
@@ -2752,7 +2744,6 @@ function copyToClipboard(text) {
             return navigator.clipboard.writeText(text);
         }
     } catch (e) {}
-    // запасной вариант для WebView
     const ta = document.createElement('textarea');
     ta.value = text;
     ta.style.position = 'fixed';
@@ -2765,10 +2756,8 @@ function copyToClipboard(text) {
 
 function sendToMAX() {
     if (!currentOrder) return;
-
     const message = getOrderTextMessage();
     copyToClipboard(message);
-
     let url;
     if (MAX_PROFILE_URL) {
         url = MAX_PROFILE_URL;
@@ -2777,10 +2766,8 @@ function sendToMAX() {
         url = `https://max.ru/:share?text=${encodeURIComponent(message)}`;
         showToast('💬 Выберите чат магазина в MAX и отправьте');
     }
-
     window.open(url, '_blank');
 }
-
 
 // ========== АДМИНКА ==========
 function showPinModal() {
@@ -2833,7 +2820,7 @@ function addNewProduct() {
     const emoji = document.getElementById('newProductEmoji').value || '🍽️';
     const img = document.getElementById('newProductImg').value;
     if (!name || !price) { showToast('❌ Заполните название и цену'); return; }
-    const newId = Math.max(...products.map(p => p.id)) + 1;
+    const newId = Math.max(...products.map(p => p.id), 0) + 1;
     products.push({ id: newId, name, desc, price, type, category, emoji, img });
     saveProducts();
     document.getElementById('newProductName').value = '';
@@ -2877,7 +2864,7 @@ function editProduct(id) {
 function saveProduct() {
     const id = document.getElementById('editProductId').value;
     const productIndex = products.findIndex(p => p.id == id);
-    
+
     if (productIndex === -1) {
         showToast('❌ Товар не найден');
         return;
@@ -2912,16 +2899,29 @@ function saveProduct() {
 }
 
 // ========== СОХРАНЕНИЕ ТОВАРОВ (ЛОКАЛЬНО + FIRESTORE) ==========
+// Пишет в тот же путь, откуда читаем: shopData/catalog/catalog/{catalogSubDocIdResolved || CATALOG_SUB_DOC}
 function saveProducts() {
     localStorage.setItem('products', JSON.stringify(products));
     if (db) {
-        db.collection("shopData").doc("catalog").set({
-            items: products,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true })
-        .catch(error => {
-            console.error("❌ Ошибка синхронизации каталога с Firestore:", error);
-        });
+        const subDocId = catalogSubDocIdResolved || CATALOG_SUB_DOC;
+        if (!catalogSubDocIdResolved) {
+            console.warn(
+                `⚠️ Имя документа в подколлекции ${CATALOG_ROOT}/${CATALOG_PARENT_DOC}/${CATALOG_SUBCOLLECTION} ` +
+                `не было получено (Firestore был пуст). Использую "${CATALOG_SUB_DOC}". ` +
+                `Если это не то имя — откройте Firestore, скопируйте реальное и замените константу CATALOG_SUB_DOC в начале скрипта.`
+            );
+        }
+        db.collection(CATALOG_ROOT)
+          .doc(CATALOG_PARENT_DOC)
+          .collection(CATALOG_SUBCOLLECTION)
+          .doc(subDocId)
+          .set({
+              items: products,
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true })
+          .catch(error => {
+              console.error(`❌ Ошибка синхронизации каталога с Firestore (${CATALOG_ROOT}/${CATALOG_PARENT_DOC}/${CATALOG_SUBCOLLECTION}/${subDocId}):`, error);
+          });
     }
 }
 
@@ -2933,6 +2933,7 @@ function closeEditModal() {
 function addToCart(productId, event) {
     if (event) event.stopPropagation();
     const product = getAllProducts().find(p => p.id === productId);
+    if (!product) return;
     const existing = cart.find(item => item.id === productId);
     existing ? existing.quantity++ : cart.push({ ...product, quantity: 1 });
     saveCart();
@@ -3128,7 +3129,7 @@ function renderProducts() {
 
     grid.innerHTML = finalProducts.map(p => {
         const isFavorite = favorites.includes(p.id);
-        const adminControls = (isAdminAuthenticated && !p.__fromCollection) ? `
+        const adminControls = isAdminAuthenticated ? `
             <div class="admin-controls">
                 <button class="admin-btn edit" onclick="editProduct(${JSON.stringify(p.id)}); event.stopPropagation();">✏️</button>
                 <button class="admin-btn delete" onclick="deleteProduct(${JSON.stringify(p.id)}); event.stopPropagation();">🗑️</button>
@@ -3177,7 +3178,6 @@ function showToast(message) {
 
 // ========== ИНИЦИАЛИЗАЦИЯ ==========
 document.addEventListener('DOMContentLoaded', () => {
-    // Язык
     applyLanguage();
 
     const savedTheme = localStorage.getItem('theme') || 'dark';
